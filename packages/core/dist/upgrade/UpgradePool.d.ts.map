@@ -1,0 +1,1 @@
+{"version":3,"file":"UpgradePool.d.ts","sourceRoot":"","sources":["../../src/upgrade/UpgradePool.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,SAAS,EACT,aAAa,EAMd,MAAM,yBAAyB,CAAC;AA0BjC,qBAAa,WAAW;IACtB,OAAO,CAAC,WAAW,CAAqC;IAExD,QAAQ,CAAC,EAAE,EAAE,SAAS,GAAG,MAAM;IAI/B,YAAY,CAAC,EAAE,EAAE,SAAS,GAAG,IAAI;IAKjC,UAAU,CAAC,KAAK,GAAE,MAA8B,GAAG,aAAa,EAAE;IAsClE,KAAK,IAAI,IAAI;CAGd"}
