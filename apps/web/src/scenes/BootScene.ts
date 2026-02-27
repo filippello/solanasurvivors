@@ -32,7 +32,7 @@ export class BootScene extends Phaser.Scene {
     this.load.spritesheet('explosion', 'assets/effects/explosion.png', { frameWidth: 64, frameHeight: 64 });
 
     // World
-    this.load.image('ground-tile', 'assets/world/ground-tile.png');
+    this.load.spritesheet('grass-tiles', 'assets/world/grasstitle.png', { frameWidth: 32, frameHeight: 32 });
   }
 
   create(): void {

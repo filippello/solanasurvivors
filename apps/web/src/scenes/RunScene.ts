@@ -32,7 +32,8 @@ export class RunScene extends Phaser.Scene {
   hud!: HUD;
   damageNumbers!: DamageNumberManager;
 
-  private groundLayer!: Phaser.GameObjects.TileSprite;
+  private groundMap!: Phaser.Tilemaps.Tilemap;
+  private groundMapLayer!: Phaser.Tilemaps.TilemapLayer;
   private gameRunning = true;
   private paused = false;
   private runNftPool: EnemyNftEntry[] = [];
@@ -89,9 +90,31 @@ export class RunScene extends Phaser.Scene {
       // Session is optional — game works without wallet
     }
 
-    // Infinite tiling ground
-    this.groundLayer = this.add.tileSprite(0, 0, GAME_WIDTH * 3, GAME_HEIGHT * 3, 'ground-tile')
-      .setOrigin(0.5);
+    // Procedural ground tilemap with random tile variation
+    const TILE_SIZE = 32;
+    const MAP_TILES_W = Math.ceil((GAME_WIDTH * 3) / TILE_SIZE);
+    const MAP_TILES_H = Math.ceil((GAME_HEIGHT * 3) / TILE_SIZE);
+    this.groundMap = this.make.tilemap({
+      tileWidth: TILE_SIZE,
+      tileHeight: TILE_SIZE,
+      width: MAP_TILES_W,
+      height: MAP_TILES_H,
+    });
+    const tileset = this.groundMap.addTilesetImage('grass-tiles')!;
+    this.groundMapLayer = this.groundMap.createBlankLayer('ground', tileset)!;
+    // Weighted random: tile 0 = 80%, tile 1 = 12%, tile 2 = 8%
+    for (let y = 0; y < MAP_TILES_H; y++) {
+      for (let x = 0; x < MAP_TILES_W; x++) {
+        const r = Math.random();
+        const tileIndex = r < 0.80 ? 0 : r < 0.92 ? 1 : 2;
+        this.groundMapLayer.putTileAt(tileIndex, x, y);
+      }
+    }
+    // Center the map so player spawns in the middle
+    this.groundMapLayer.setPosition(
+      -(MAP_TILES_W * TILE_SIZE) / 2,
+      -(MAP_TILES_H * TILE_SIZE) / 2,
+    );
 
     // Player
     this.player = new Player(this, 0, 0);
@@ -347,8 +370,6 @@ export class RunScene extends Phaser.Scene {
     // HUD
     this.hud.update(this.player.pState, this.elapsedMs);
 
-    // Ground
-    this.groundLayer.setPosition(this.player.x, this.player.y);
-    this.groundLayer.setTilePosition(this.player.x, this.player.y);
+    // Ground tilemap is static — no update needed
   }
 }
