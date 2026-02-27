@@ -332,9 +332,9 @@ Every enemy goes through a 3-step pipeline: **NFT IMAGE → Concept Art → in-g
     <td align="center"><img src="https://github.com/user-attachments/assets/18fa2c6f-48f5-413b-9ff8-eaa757aba8d2" width="96" /></td>
   </tr>
   <tr>
-    <td align="center"><em>Concept Art</em></td>
-    <td align="center"><em>Concept Art</em></td>
-    <td align="center"><em>Concept Art</em></td>
+    <td align="center"><em>Game Sprite</em></td>
+    <td align="center"><em>Game Sprite</em></td>
+    <td align="center"><em>Game Sprite</em></td>
   </tr>
 </table>
 
