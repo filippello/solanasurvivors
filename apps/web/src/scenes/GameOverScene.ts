@@ -22,7 +22,7 @@ export class GameOverScene extends Phaser.Scene {
     // Title
     const titleText = r.victory ? 'VICTORY!' : 'GAME OVER';
     const titleColor = r.victory ? '#44ff44' : '#ff4444';
-    this.add.text(cx, cy - 85, titleText, textStyle(18, titleColor, true)).setOrigin(0.5);
+    this.add.text(cx, cy - 85, titleText, textStyle(18, titleColor)).setOrigin(0.5);
 
     // Subtitle
     const subtitle = r.victory ? 'You survived 10 minutes!' : 'You have been overwhelmed...';
@@ -50,7 +50,7 @@ export class GameOverScene extends Phaser.Scene {
       const killerY = cy + 28;
       const killerName = r.killerName || `NFT ${r.killerMint.slice(0, 8)}...`;
 
-      this.add.text(cx, killerY, `Killed by: ${killerName}`, textStyle(8, '#ff8844', true)).setOrigin(0.5);
+      this.add.text(cx, killerY, `Killed by: ${killerName}`, textStyle(8, '#ff8844')).setOrigin(0.5);
 
       if (r.killerCollection) {
         this.add.text(cx, killerY + 14, `Collection: ${r.killerCollection.slice(0, 12)}...`, textStyle(7, '#888888')).setOrigin(0.5);

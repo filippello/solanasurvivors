@@ -28,7 +28,7 @@ export class LeaderboardScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 16, 'LEADERBOARD', HEADER).setOrigin(0.5);
 
     // Close button
-    const closeBtn = this.add.text(GAME_WIDTH - 16, 12, '[X]', textStyle(8, '#ff4444', true))
+    const closeBtn = this.add.text(GAME_WIDTH - 16, 12, '[X]', textStyle(8, '#ff4444'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => this.scene.stop('LeaderboardScene'));
 
@@ -40,10 +40,10 @@ export class LeaderboardScene extends Phaser.Scene {
   private createTabs(): void {
     const tabY = 38;
 
-    const runsTab = this.add.text(GAME_WIDTH / 2 - 60, tabY, 'TOP RUNS', textStyle(7, this.activeTab === 'runs' ? '#ffdd44' : '#666666', true))
+    const runsTab = this.add.text(GAME_WIDTH / 2 - 60, tabY, 'TOP RUNS', textStyle(7, this.activeTab === 'runs' ? '#ffdd44' : '#666666'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    const killersTab = this.add.text(GAME_WIDTH / 2 + 60, tabY, 'TOP KILLERS', textStyle(7, this.activeTab === 'killers' ? '#ffdd44' : '#666666', true))
+    const killersTab = this.add.text(GAME_WIDTH / 2 + 60, tabY, 'TOP KILLERS', textStyle(7, this.activeTab === 'killers' ? '#ffdd44' : '#666666'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     runsTab.on('pointerdown', () => {
@@ -64,7 +64,7 @@ export class LeaderboardScene extends Phaser.Scene {
   }
 
   private renderContent(): void {
-    this.contentGroup.clear(true, true);
+    this.contentGroup.clear(true);
 
     if (this.activeTab === 'runs') {
       this.renderTopRuns();

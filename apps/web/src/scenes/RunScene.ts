@@ -70,7 +70,7 @@ export class RunScene extends Phaser.Scene {
         const overlay = this.add.rectangle(0, 0, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0x000000, 0.6)
           .setDepth(999).setScrollFactor(0);
         const label = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10,
-          'Approve session in wallet...', textStyle(8, '#ffdd44', true))
+          'Approve session in wallet...', textStyle(8, '#ffdd44'))
           .setOrigin(0.5).setDepth(1000).setScrollFactor(0);
         const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10,
           'Sign once to enable gasless kills', SMALL)

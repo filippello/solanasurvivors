@@ -61,7 +61,7 @@ export class HomeScene extends Phaser.Scene {
     // --- LEADERBOARD button ---
     const lbBg = this.add.rectangle(cx, cy + 51, 100, 25, 0x444444)
       .setInteractive({ useHandCursor: true });
-    this.add.text(cx, cy + 51, 'LEADERBOARD', textStyle(7, '#ffffff', true)).setOrigin(0.5);
+    this.add.text(cx, cy + 51, 'LEADERBOARD', textStyle(7, '#ffffff')).setOrigin(0.5);
 
     lbBg.on('pointerover', () => lbBg.setFillStyle(0x666666));
     lbBg.on('pointerout', () => lbBg.setFillStyle(0x444444));

@@ -1,25 +1,29 @@
 /**
  * Centralized text styles for crisp rendering in pixel-art mode.
  *
- * Uses "Press Start 2P" (Google Fonts pixel font) and resolution: 2
- * so text is rendered at 2x internally, eliminating blur from FIT scaling.
+ * "Press Start 2P" is a pixel font designed for 8px multiples.
+ * It must NOT use bold (browser fakes it by smearing pixels).
+ * We render the text canvas at high resolution so FIT scaling
+ * downsamples rather than upsamples, keeping edges sharp.
  */
 
 const FONT = '"Press Start 2P"';
-const RES = 2;
+
+// Render text at 4x so it stays crisp at any screen size.
+// Phaser's FIT mode scales the 640×360 canvas up; without this,
+// small text gets blurry from nearest-neighbor upscaling.
+const RES = 4;
 
 // -- Base factory ----------------------------------------------------------
 
 export function textStyle(
   size: number,
   color = '#ffffff',
-  bold = false,
 ): Phaser.Types.GameObjects.Text.TextStyle {
   return {
     fontSize: `${size}px`,
     color,
     fontFamily: FONT,
-    fontStyle: bold ? 'bold' : 'normal',
     resolution: RES,
   };
 }
@@ -27,13 +31,13 @@ export function textStyle(
 // -- Pre-built presets -----------------------------------------------------
 
 /** Big title — "SOLANA SURVIVORS", "VICTORY!", "GAME OVER" */
-export const TITLE = textStyle(18, '#ffffff', true);
+export const TITLE = textStyle(16, '#ffffff');
 
 /** Section header — "LEVEL UP!", "PAUSED", "COMMUNITY ARENA" */
-export const HEADER = textStyle(14, '#ffdd44', true);
+export const HEADER = textStyle(12, '#ffdd44');
 
 /** Button label — "START", "ARENA", etc. */
-export const BUTTON = textStyle(10, '#ffffff', true);
+export const BUTTON = textStyle(10, '#ffffff');
 
 /** Body / stats text */
 export const BODY = textStyle(8, '#ffffff');
@@ -45,13 +49,12 @@ export const SMALL = textStyle(8, '#aaaaaa');
 export const TINY = textStyle(7, '#888888');
 
 /** HUD numbers and labels */
-export const HUD_LABEL = textStyle(7, '#ffffff', true);
+export const HUD_LABEL = textStyle(7, '#ffffff');
 
 /** Damage numbers (in-world, not HUD) */
 export const DAMAGE = {
   fontSize: '7px',
   fontFamily: FONT,
-  fontStyle: 'bold',
   color: '#ffffff',
   stroke: '#000000',
   strokeThickness: 2,

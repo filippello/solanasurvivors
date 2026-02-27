@@ -42,10 +42,10 @@ export class LevelUpScene extends Phaser.Scene {
       const badgeColor = choice.type === 'weapon' ? 0xcc4444 : 0x44cc44;
       this.add.rectangle(cx, cy - cardHeight / 2 + 10, 50, 14, badgeColor, 0.8)
         .setStrokeStyle(1, 0xffffff, 0.3);
-      this.add.text(cx, cy - cardHeight / 2 + 10, choice.type.toUpperCase(), textStyle(6, '#ffffff', true)).setOrigin(0.5);
+      this.add.text(cx, cy - cardHeight / 2 + 10, choice.type.toUpperCase(), textStyle(6, '#ffffff')).setOrigin(0.5);
 
       // Name
-      this.add.text(cx, cy - 10, choice.name, textStyle(8, '#ffffff', true)).setOrigin(0.5);
+      this.add.text(cx, cy - 10, choice.name, textStyle(8, '#ffffff')).setOrigin(0.5);
 
       // Level
       const levelText = choice.currentLevel === 0

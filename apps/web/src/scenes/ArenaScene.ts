@@ -26,7 +26,7 @@ export class ArenaScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 16, 'COMMUNITY ARENA', HEADER).setOrigin(0.5);
 
     // Close button
-    const closeBtn = this.add.text(GAME_WIDTH - 16, 12, '[X]', textStyle(8, '#ff4444', true))
+    const closeBtn = this.add.text(GAME_WIDTH - 16, 12, '[X]', textStyle(8, '#ff4444'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
     closeBtn.on('pointerdown', () => this.scene.stop('ArenaScene'));
 
@@ -96,7 +96,7 @@ export class ArenaScene extends Phaser.Scene {
       // Deposit button
       const btnBg = this.add.rectangle(cx, cy + 18, 60, 16, 0x44aa44)
         .setInteractive({ useHandCursor: true });
-      const btnText = this.add.text(cx, cy + 18, 'DEPOSIT', textStyle(6, '#ffffff', true)).setOrigin(0.5);
+      const btnText = this.add.text(cx, cy + 18, 'DEPOSIT', textStyle(6, '#ffffff')).setOrigin(0.5);
 
       btnBg.on('pointerover', () => btnBg.setFillStyle(0x66cc66));
       btnBg.on('pointerout', () => btnBg.setFillStyle(0x44aa44));
@@ -166,7 +166,7 @@ export class ArenaScene extends Phaser.Scene {
   private renderTopKillers(hasEnemies: boolean): void {
     const startY = 190;
 
-    this.add.text(GAME_WIDTH / 2, startY, 'TOP KILLERS', textStyle(8, '#ffdd44', true)).setOrigin(0.5);
+    this.add.text(GAME_WIDTH / 2, startY, 'TOP KILLERS', textStyle(8, '#ffdd44')).setOrigin(0.5);
 
     if (!hasEnemies) {
       this.add.text(GAME_WIDTH / 2, startY + 18, 'No enemies deposited yet', TINY).setOrigin(0.5);

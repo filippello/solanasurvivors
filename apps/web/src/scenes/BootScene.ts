@@ -58,6 +58,10 @@ export class BootScene extends Phaser.Scene {
       repeat: 0,
     });
 
-    this.scene.start('HomeScene');
+    // Wait for "Press Start 2P" to load before showing any text scenes.
+    // Without this, Phaser renders text with a fallback serif font on first load.
+    document.fonts.load('16px "Press Start 2P"').then(() => {
+      this.scene.start('HomeScene');
+    });
   }
 }

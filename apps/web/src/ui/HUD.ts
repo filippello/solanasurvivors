@@ -51,11 +51,11 @@ export class HUD {
     this.xpBarFill = s.add.rectangle(hpX, xpY, 0, 4, 0x44aaff).setOrigin(0, 0).setScrollFactor(0).setDepth(101);
 
     // Timer (top center)
-    this.timerText = s.add.text(GAME_WIDTH / 2, 8, '0:00', textStyle(10, '#ffffff', true))
+    this.timerText = s.add.text(GAME_WIDTH / 2, 8, '0:00', textStyle(10, '#ffffff'))
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
 
     // Level (below HP)
-    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', textStyle(7, '#ffdd44', true))
+    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', textStyle(7, '#ffdd44'))
       .setOrigin(0, 0).setScrollFactor(0).setDepth(100);
 
     // Kill count (top right)
