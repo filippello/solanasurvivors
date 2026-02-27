@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/40900951-0bee-4e1f-9d23-0331d0ab77e5" width="100%" />
+</p>
+
 # Solana Survivors
 
 A **Vampire Survivors-like** game on Solana where community-deposited NFTs become in-game enemies, and every player death is recorded on-chain — gaslessly — via **MagicBlock Session Keys**.
