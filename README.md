@@ -308,7 +308,7 @@ All weapons upgradeable to level 5.
 
 ## Art Pipeline
 
-Every enemy goes through a 3-step pipeline: **AI concept art → spritesheet → in-game pixel sprite**.
+Every enemy goes through a 3-step pipeline: **NFT IMAGE → Concept Art → in-game pixel sprite**.
 
 <table>
   <tr>
@@ -317,14 +317,14 @@ Every enemy goes through a 3-step pipeline: **AI concept art → spritesheet →
     <th>Enemy 3</th>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/ec607a09-35fc-455a-9760-e1294dbb0ada" width="250" /></td>
-    <td><img src="https://github.com/user-attachments/assets/70417901-a6f1-4fda-a4c0-c706be209687" width="250" /></td>
-    <td><img src="https://github.com/user-attachments/assets/31ebb824-aee7-4e4c-bcb5-774d202eae92" width="250" /></td>
-  </tr>
-  <tr>
     <td><img src="https://github.com/user-attachments/assets/a73ea054-ca5c-40fa-bce6-7e04ada22d4c" width="250" /></td>
     <td><img src="https://github.com/user-attachments/assets/a5d97ece-5dcb-4c02-aea8-f94dcb413799" width="250" /></td>
     <td><img src="https://github.com/user-attachments/assets/97e97c35-99f8-4431-bf00-98ee2f600716" width="250" /></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/ec607a09-35fc-455a-9760-e1294dbb0ada" width="250" /></td>
+    <td><img src="https://github.com/user-attachments/assets/70417901-a6f1-4fda-a4c0-c706be209687" width="250" /></td>
+    <td><img src="https://github.com/user-attachments/assets/31ebb824-aee7-4e4c-bcb5-774d202eae92" width="250" /></td>
   </tr>
   <tr>
     <td align="center"><img src="https://github.com/user-attachments/assets/67fbeb0b-8d72-497e-929c-eaf2333076e8" width="96" /></td>
