@@ -50,26 +50,35 @@ export class HomeScene extends Phaser.Scene {
     startBg.on('pointerdown', () => this.scene.start('RunScene'));
 
     // --- ARENA button ---
-    const arenaBg = this.add.rectangle(cx, cy + 18, 100, 25, 0x995500)
+    const arenaBg = this.add.rectangle(cx, cy + 18, 100, 25, 0xcc8822)
       .setInteractive({ useHandCursor: true });
     this.add.text(cx, cy + 18, 'ARENA', BUTTON).setOrigin(0.5);
 
-    arenaBg.on('pointerover', () => arenaBg.setFillStyle(0xbb7700));
-    arenaBg.on('pointerout', () => arenaBg.setFillStyle(0x995500));
+    arenaBg.on('pointerover', () => arenaBg.setFillStyle(0xee9933));
+    arenaBg.on('pointerout', () => arenaBg.setFillStyle(0xcc8822));
     arenaBg.on('pointerdown', () => this.scene.launch('ArenaScene'));
 
-    // --- LEADERBOARD button ---
-    const lbBg = this.add.rectangle(cx, cy + 51, 100, 25, 0x444444)
+    // --- SACRIFICE button ---
+    const sacrificeBg = this.add.rectangle(cx, cy + 51, 100, 25, 0xcc3333)
       .setInteractive({ useHandCursor: true });
-    this.add.text(cx, cy + 51, 'LEADERBOARD', textStyle(7, '#ffffff')).setOrigin(0.5);
+    this.add.text(cx, cy + 51, 'SACRIFICE', BUTTON).setOrigin(0.5);
+
+    sacrificeBg.on('pointerover', () => sacrificeBg.setFillStyle(0xee4444));
+    sacrificeBg.on('pointerout', () => sacrificeBg.setFillStyle(0xcc3333));
+    sacrificeBg.on('pointerdown', () => this.scene.launch('SacrificeScene'));
+
+    // --- LEADERBOARD button ---
+    const lbBg = this.add.rectangle(cx, cy + 84, 100, 25, 0x444444)
+      .setInteractive({ useHandCursor: true });
+    this.add.text(cx, cy + 84, 'LEADERBOARD', textStyle(7, '#ffffff')).setOrigin(0.5);
 
     lbBg.on('pointerover', () => lbBg.setFillStyle(0x666666));
     lbBg.on('pointerout', () => lbBg.setFillStyle(0x444444));
     lbBg.on('pointerdown', () => this.scene.launch('LeaderboardScene'));
 
     // --- Instructions ---
-    this.add.text(cx, cy + 82, 'WASD / Arrows to move', TINY).setOrigin(0.5);
-    this.add.text(cx, cy + 97, 'Gamepad supported', TINY).setOrigin(0.5);
+    this.add.text(cx, cy + 115, 'WASD / Arrows to move', TINY).setOrigin(0.5);
+    this.add.text(cx, cy + 130, 'Gamepad supported', TINY).setOrigin(0.5);
   }
 
   private async handleWalletClick(): Promise<void> {

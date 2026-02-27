@@ -14,6 +14,9 @@ const MINT_TYPE_OVERRIDES: Record<string, EnemyType> = {
   'Bnay2rPp7jGCXEoDorvCPqeVRVeHKVRB5TkV3qwdrgXs':  'tank',      // Shadow Imp
   'Hg6AxgtqqsNbuwVzRGvKXAkoMaK6a1z2fD2G9opUykfs':  'ranged',    // Crystal Spider
   'Fhr4AyaG2Wbi1anxdSHwXmGjcUpm8fcpqyo7xWpPovet':  'exploder',  // Void Serpent
+  'BCGzRJjd8Zyt7HyhnEERYkZhiXvWwBY99KN6V2TkJu81':  'boss',      // Fire Monkey (demo)
+  '7F8TpbMpz8bSmM1HQtupvMdoCbWJLKhaZCB388Rk1Uu4':  'tank',      // Neon Serpent (demo)
+  '22mgzuS5A9UUchuSruum9PxtWNS6jzpsJV5KaNPKWVLX':  'ranged',    // Phantom Swarm (demo)
 };
 
 export interface EnemyNftEntry {

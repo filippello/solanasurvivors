@@ -22,7 +22,7 @@ export class LeaderboardScene extends Phaser.Scene {
     this.contentGroup = this.add.group();
 
     // Dim overlay
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85);
+    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x1a1a2e, 1);
 
     // Header
     this.add.text(GAME_WIDTH / 2, 16, 'LEADERBOARD', HEADER).setOrigin(0.5);

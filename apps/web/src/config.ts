@@ -7,6 +7,7 @@ import { PauseScene } from './scenes/PauseScene';
 import { LevelUpScene } from './scenes/LevelUpScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { ArenaScene } from './scenes/ArenaScene';
+import { SacrificeScene } from './scenes/SacrificeScene';
 import { LeaderboardScene } from './scenes/LeaderboardScene';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -24,6 +25,6 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  scene: [BootScene, HomeScene, RunScene, PauseScene, LevelUpScene, GameOverScene, ArenaScene, LeaderboardScene],
+  scene: [BootScene, HomeScene, RunScene, PauseScene, LevelUpScene, GameOverScene, ArenaScene, SacrificeScene, LeaderboardScene],
   backgroundColor: '#1a1a2e',
 };

@@ -18,6 +18,16 @@ export class BootScene extends Phaser.Scene {
     this.load.image('enemy-elite', 'assets/enemies/elite.png');
     this.load.image('enemy-boss', 'assets/enemies/boss.png');
 
+    // NFT art for sacrifice cards (shown on selection grid)
+    this.load.image('nft-boss', 'assets/test/nftboss.png');
+    this.load.image('nft-elite', 'assets/test/nftelite.png');
+    this.load.image('nft-exploder', 'assets/test/nftexploder.png');
+
+    // Enemy art revealed after sacrifice
+    this.load.image('sacrifice-boss', 'assets/test/boss.png');
+    this.load.image('sacrifice-elite', 'assets/test/elite.png');
+    this.load.image('sacrifice-exploder', 'assets/test/exploder.png');
+
     // Projectiles
     this.load.image('proj-magic-bolt', 'assets/projectiles/magic-bolt.png');
     this.load.image('proj-knife', 'assets/projectiles/knife.png');
