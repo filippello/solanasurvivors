@@ -1,1 +1,0 @@
-{"version":3,"file":"spawnTable.d.ts","sourceRoot":"","sources":["../../src/balance/spawnTable.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,yBAAyB,CAAC;AAEpD,MAAM,WAAW,YAAY;IAC3B,sDAAsD;IACtD,WAAW,EAAE,MAAM,CAAC;IACpB,4CAA4C;IAC5C,KAAK,EAAE,SAAS,EAAE,CAAC;IACnB,8CAA8C;IAC9C,QAAQ,EAAE,MAAM,CAAC;CAClB;AAED,eAAO,MAAM,WAAW,EAAE,YAAY,EAWrC,CAAC"}

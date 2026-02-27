@@ -1,1 +1,0 @@
-{"version":3,"file":"IWalletAdapter.d.ts","sourceRoot":"","sources":["../../src/integration/IWalletAdapter.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,cAAc;IAC7B,OAAO,IAAI,OAAO,CAAC,MAAM,GAAG,IAAI,CAAC,CAAC;IAClC,UAAU,IAAI,OAAO,CAAC,IAAI,CAAC,CAAC;IAC5B,UAAU,IAAI,MAAM,GAAG,IAAI,CAAC;IAC5B,WAAW,IAAI,OAAO,CAAC;CACxB"}

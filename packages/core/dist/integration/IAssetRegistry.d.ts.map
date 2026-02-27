@@ -1,1 +1,0 @@
-{"version":3,"file":"IAssetRegistry.d.ts","sourceRoot":"","sources":["../../src/integration/IAssetRegistry.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,cAAc;IAC7B,aAAa,IAAI,OAAO,CAAC,MAAM,EAAE,CAAC,CAAC;IACnC,aAAa,IAAI,MAAM,GAAG,IAAI,CAAC;IAC/B,aAAa,CAAC,MAAM,EAAE,MAAM,GAAG,IAAI,CAAC;CACrC"}

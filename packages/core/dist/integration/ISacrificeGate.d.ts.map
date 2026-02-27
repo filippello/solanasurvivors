@@ -1,1 +1,0 @@
-{"version":3,"file":"ISacrificeGate.d.ts","sourceRoot":"","sources":["../../src/integration/ISacrificeGate.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,yBAAyB,CAAC;AAEpD,MAAM,WAAW,cAAc;IAC7B,WAAW,IAAI,OAAO,CAAC,OAAO,CAAC,CAAC;IAChC,eAAe,CAAC,MAAM,EAAE,SAAS,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CACnD"}
