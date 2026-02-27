@@ -1,8 +1,22 @@
 import Phaser from 'phaser';
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  SystemProgram,
+} from '@solana/web3.js';
+import {
+  getAssociatedTokenAddressSync,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
 import { GAME_WIDTH, GAME_HEIGHT } from '@solanasurvivors/shared';
 import type { NftAsset } from '@solanasurvivors/core';
 import { getServices } from '../integration/GameServices';
 import { HEADER, TINY, textStyle } from '../ui/textStyles';
+
+const METAPLEX_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+const DEPOSIT_NFT_DISCRIMINATOR = Buffer.from([93, 226, 132, 166, 141, 9, 48, 101]);
 
 /** Map mint address → preloaded NFT art texture key */
 const MINT_NFT_IMAGE: Record<string, string> = {
@@ -20,7 +34,7 @@ const NFT_TO_SACRIFICE: Record<string, string> = {
 
 /**
  * Overlay scene: NFT selection grid → ritual modal with pentagram → sacrifice.
- * TEST MODE: fake wallet popup + dramatic effects, no real blockchain tx.
+ * Sends a real deposit_nft transaction on-chain via wallet adapter.
  */
 export class SacrificeScene extends Phaser.Scene {
   private ritualObjects: Phaser.GameObjects.GameObject[] = [];
@@ -245,95 +259,113 @@ export class SacrificeScene extends Phaser.Scene {
       this.cleanupRitual();
     });
 
-    // --- Wire up SACRIFICE button ---
+    // --- Wire up SACRIFICE button → real blockchain tx ---
     sBtnBg.on('pointerdown', () => {
       sBtnBg.disableInteractive();
       sBtnText.setText('...');
 
-      this.showFakePopup(
-        // Confirm
-        () => {
-          this.playRitualEffect(
-            nftImg, pentaGlow, pentaLines, ambient, nameText, sBtnBg, sBtnText,
-            texKey, cx, ritualCy, pentaRadius,
-            () => {
-              // Return to card grid — update the card
-              this.cleanupRitual();
-              cardBtnText.setText('DONE');
-              cardBtnBg.setFillStyle(0x2a6a2a);
-              cardBtnBg.disableInteractive();
-              cardBg.setStrokeStyle(2, 0x44ff44);
+      this.executeDeposit(nft).then(() => {
+        // TX confirmed → play ritual effect
+        this.playRitualEffect(
+          nftImg, pentaGlow, pentaLines, ambient, nameText, sBtnBg, sBtnText,
+          texKey, cx, ritualCy, pentaRadius,
+          () => {
+            // Return to card grid — update the card
+            this.cleanupRitual();
+            cardBtnText.setText('DONE');
+            cardBtnBg.setFillStyle(0x2a6a2a);
+            cardBtnBg.disableInteractive();
+            cardBg.setStrokeStyle(2, 0x44ff44);
 
-              // Swap card image to enemy art
-              const sacrificeTex = texKey ? NFT_TO_SACRIFICE[texKey] : undefined;
-              if (cardImage && sacrificeTex && this.textures.exists(sacrificeTex)) {
-                cardImage.setTexture(sacrificeTex);
-                cardImage.setDisplaySize(120, 120);
-                cardImage.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
-              }
-            },
-          );
-        },
-        // Cancel
-        () => {
+            // Swap card image to enemy art
+            const sacrificeTex = texKey ? NFT_TO_SACRIFICE[texKey] : undefined;
+            if (cardImage && sacrificeTex && this.textures.exists(sacrificeTex)) {
+              cardImage.setTexture(sacrificeTex);
+              cardImage.setDisplaySize(120, 120);
+              cardImage.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+            }
+          },
+        );
+      }).catch((err) => {
+        console.error('[SacrificeScene] Deposit failed', err);
+        sBtnText.setText('FAIL');
+        sBtnBg.setFillStyle(0xaa4444);
+
+        // Allow retry after 2s
+        this.time.delayedCall(2000, () => {
+          if (!sBtnText.active) return;
           sBtnText.setText('SACRIFICE');
           sBtnBg.setFillStyle(0xcc2222);
           sBtnBg.setInteractive({ useHandCursor: true });
-        },
-      );
+        });
+      });
     });
   }
 
   /* ================================================================
-   *  FAKE WALLET POPUP
+   *  BLOCKCHAIN — build & send deposit_nft transaction
    * ================================================================ */
 
-  private showFakePopup(onConfirm: () => void, onCancel: () => void): void {
-    const cx = GAME_WIDTH / 2;
-    const cy = GAME_HEIGHT / 2;
-    const popupW = 240;
-    const popupH = 160;
+  private async executeDeposit(nft: NftAsset): Promise<void> {
+    const { wallet, enemyPool } = getServices();
+    const walletAdapter = wallet as import('../integration/SolanaWalletAdapter').SolanaWalletAdapter;
+    const connection = walletAdapter.getConnection();
+    const userPubkey = walletAdapter.getPublicKey()!;
 
-    const popOverlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.5)
-      .setInteractive();
-    const popBg = this.add.rectangle(cx, cy, popupW, popupH, 0x1e1e2f)
-      .setStrokeStyle(2, 0x7b61ff);
-    const popTitle = this.add.text(cx, cy - 55, 'Confirm Transaction', textStyle(8, '#ffffff'))
-      .setOrigin(0.5);
-    const popSubtitle = this.add.text(cx, cy - 38, 'localhost:3000', textStyle(8, '#888888'))
-      .setOrigin(0.5);
-    const popBody1 = this.add.text(cx, cy - 12, 'Sacrifice NFT to Arena', textStyle(8, '#cccccc'))
-      .setOrigin(0.5);
-    const popBody2 = this.add.text(cx, cy + 6, 'Network fee: 0.00005 SOL', textStyle(8, '#888888'))
-      .setOrigin(0.5);
+    const programId = new PublicKey(
+      import.meta.env.VITE_ARENA_PROGRAM_ID || '8WUCDRofKewY1oGh93eGa1dpacVjYV1LGgbZZN5JKkS4',
+    );
+    const mint = new PublicKey(nft.id);
 
-    const btnW = 90;
-    const btnH = 26;
-    const btnY = cy + 45;
+    // Derive all accounts
+    const userAta = getAssociatedTokenAddressSync(mint, userPubkey);
+    const [arenaConfig] = PublicKey.findProgramAddressSync(
+      [Buffer.from('arena_config')], programId,
+    );
+    const [arenaVault] = PublicKey.findProgramAddressSync(
+      [Buffer.from('arena_vault')], programId,
+    );
+    const vaultAta = getAssociatedTokenAddressSync(mint, arenaVault, true);
+    const [metadata] = PublicKey.findProgramAddressSync(
+      [Buffer.from('metadata'), METAPLEX_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+      METAPLEX_PROGRAM_ID,
+    );
+    const [enemyAsset] = PublicKey.findProgramAddressSync(
+      [Buffer.from('enemy_asset'), mint.toBuffer()], programId,
+    );
 
-    const cancelBg = this.add.rectangle(cx - 55, btnY, btnW, btnH, 0x444455)
-      .setInteractive({ useHandCursor: true });
-    const cancelTxt = this.add.text(cx - 55, btnY, 'Cancel', textStyle(8, '#ffffff')).setOrigin(0.5);
-    cancelBg.on('pointerover', () => cancelBg.setFillStyle(0x555566));
-    cancelBg.on('pointerout', () => cancelBg.setFillStyle(0x444455));
+    const ix = new TransactionInstruction({
+      programId,
+      keys: [
+        { pubkey: userPubkey, isSigner: true, isWritable: true },
+        { pubkey: mint, isSigner: false, isWritable: false },
+        { pubkey: userAta, isSigner: false, isWritable: true },
+        { pubkey: vaultAta, isSigner: false, isWritable: true },
+        { pubkey: metadata, isSigner: false, isWritable: false },
+        { pubkey: arenaConfig, isSigner: false, isWritable: false },
+        { pubkey: arenaVault, isSigner: false, isWritable: false },
+        { pubkey: enemyAsset, isSigner: false, isWritable: true },
+        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+        { pubkey: ASSOCIATED_TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+      ],
+      data: DEPOSIT_NFT_DISCRIMINATOR,
+    });
 
-    const confirmBg = this.add.rectangle(cx + 55, btnY, btnW, btnH, 0x7b61ff)
-      .setInteractive({ useHandCursor: true });
-    const confirmTxt = this.add.text(cx + 55, btnY, 'Confirm', textStyle(8, '#ffffff')).setOrigin(0.5);
-    confirmBg.on('pointerover', () => confirmBg.setFillStyle(0x9b81ff));
-    confirmBg.on('pointerout', () => confirmBg.setFillStyle(0x7b61ff));
+    const tx = new Transaction().add(ix);
+    tx.feePayer = userPubkey;
+    tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-    const popupParts = [popOverlay, popBg, popTitle, popSubtitle, popBody1, popBody2,
-      cancelBg, cancelTxt, confirmBg, confirmTxt];
+    const sig = await wallet.signAndSendTransaction(
+      tx.serialize({ requireAllSignatures: false }),
+    );
+    console.log(`[SacrificeScene] Deposit confirmed: ${sig}`);
 
-    const destroyPopup = () => popupParts.forEach((o) => o.destroy());
-
-    cancelBg.on('pointerdown', () => { destroyPopup(); onCancel(); });
-    confirmBg.on('pointerdown', () => { destroyPopup(); onConfirm(); });
+    await enemyPool.refresh();
   }
 
   /* ================================================================
-   *  DRAMATIC RITUAL EFFECT  (~3.5 s)
+   *  DRAMATIC RITUAL EFFECT  (~5.5 s)
    * ================================================================ */
 
   private playRitualEffect(
@@ -429,8 +461,7 @@ export class SacrificeScene extends Phaser.Scene {
         onComplete: () => flash.destroy(),
       });
 
-      // Camera-like shake via offset tween on all ritual objects
-      // (Quick x jitter on pentagram)
+      // Camera-like shake via offset tween on pentagram
       this.tweens.add({
         targets: [pentaGlow, pentaLines],
         x: { from: cx - 4, to: cx + 4 },
