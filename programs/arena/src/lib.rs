@@ -152,10 +152,18 @@ pub mod arena {
         Ok(())
     }
 
+    /// Initialize a player account PDA (one-time, stores wallet authority).
+    pub fn init_player(ctx: Context<InitPlayer>) -> Result<()> {
+        let player = &mut ctx.accounts.player_account;
+        player.authority = ctx.accounts.signer.key();
+        player.bump = ctx.bumps.player_account;
+        Ok(())
+    }
+
     /// Increment the kill counter for the enemy NFT that killed a player.
     /// Accepts either a session key or a direct wallet signer.
     #[session_auth_or(
-        ctx.accounts.player.key() == ctx.accounts.player.key(),
+        ctx.accounts.player_account.authority.key() == ctx.accounts.signer.key(),
         ArenaError::Unauthorized
     )]
     pub fn record_player_death(ctx: Context<RecordPlayerDeath>, _run_id: u64) -> Result<()> {
@@ -306,15 +314,38 @@ pub struct DepositNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct InitPlayer<'info> {
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[account(
+        init,
+        payer = signer,
+        space = PlayerAccount::SPACE,
+        seeds = [b"player", signer.key().as_ref()],
+        bump
+    )]
+    pub player_account: Account<'info, PlayerAccount>,
+
+    pub system_program: Program<'info, System>,
+}
+
 #[derive(Accounts, Session)]
 pub struct RecordPlayerDeath<'info> {
     #[account(mut)]
     pub enemy_asset: Account<'info, EnemyAssetAccount>,
 
-    #[account(mut)]
-    pub player: Signer<'info>,
+    #[account(
+        seeds = [b"player", player_account.authority.as_ref()],
+        bump = player_account.bump,
+    )]
+    pub player_account: Account<'info, PlayerAccount>,
 
-    #[session(signer = player, authority = player.key())]
+    #[account(mut)]
+    pub signer: Signer<'info>,
+
+    #[session(signer = signer, authority = player_account.authority.key())]
     pub session_token: Option<Account<'info, SessionToken>>,
 }
 
@@ -361,6 +392,17 @@ pub struct ArenaVault {
 impl ArenaVault {
     /// 8 (discriminator) + 1 (bump)
     pub const SPACE: usize = 8 + 1;
+}
+
+#[account]
+pub struct PlayerAccount {
+    pub authority: Pubkey, // wallet pubkey
+    pub bump: u8,
+}
+
+impl PlayerAccount {
+    /// 8 (discriminator) + 32 (authority) + 1 (bump)
+    pub const SPACE: usize = 8 + 32 + 1;
 }
 
 #[account]
