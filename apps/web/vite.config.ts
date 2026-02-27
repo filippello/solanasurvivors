@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
-    allowedHosts: ['tournament-passes-watched-wheat.trycloudflare.com'],
+    allowedHosts: ['.trycloudflare.com'],
   },
   build: {
     target: 'ES2020',
