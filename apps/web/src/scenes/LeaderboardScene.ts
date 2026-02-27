@@ -40,10 +40,10 @@ export class LeaderboardScene extends Phaser.Scene {
   private createTabs(): void {
     const tabY = 38;
 
-    const runsTab = this.add.text(GAME_WIDTH / 2 - 60, tabY, 'TOP RUNS', textStyle(7, this.activeTab === 'runs' ? '#ffdd44' : '#666666'))
+    const runsTab = this.add.text(GAME_WIDTH / 2 - 60, tabY, 'TOP RUNS', textStyle(8, this.activeTab === 'runs' ? '#ffdd44' : '#666666'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    const killersTab = this.add.text(GAME_WIDTH / 2 + 60, tabY, 'TOP KILLERS', textStyle(7, this.activeTab === 'killers' ? '#ffdd44' : '#666666'))
+    const killersTab = this.add.text(GAME_WIDTH / 2 + 60, tabY, 'TOP KILLERS', textStyle(8, this.activeTab === 'killers' ? '#ffdd44' : '#666666'))
       .setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     runsTab.on('pointerdown', () => {
@@ -85,7 +85,7 @@ export class LeaderboardScene extends Phaser.Scene {
     }
 
     // Header row
-    const header = this.add.text(20, startY, 'PLAYER     SCORE  LVL', textStyle(6, '#888888'));
+    const header = this.add.text(20, startY, 'PLAYER     SCORE  LVL', textStyle(8, '#888888'));
     this.contentGroup.add(header);
 
     entries.forEach((entry, i) => {
@@ -96,7 +96,7 @@ export class LeaderboardScene extends Phaser.Scene {
       const line = `${player}  ${score}  ${level}`;
 
       const color = i === 0 ? '#ffdd44' : i < 3 ? '#cccccc' : '#888888';
-      const text = this.add.text(20, y, line, textStyle(6, color));
+      const text = this.add.text(20, y, line, textStyle(8, color));
       this.contentGroup.add(text);
     });
   }
@@ -113,7 +113,7 @@ export class LeaderboardScene extends Phaser.Scene {
     }
 
     // Header row
-    const header = this.add.text(20, startY, 'ENEMY        KILLS  TYPE', textStyle(6, '#888888'));
+    const header = this.add.text(20, startY, 'ENEMY        KILLS  TYPE', textStyle(8, '#888888'));
     this.contentGroup.add(header);
 
     topKillers.forEach((entry, i) => {
@@ -124,7 +124,7 @@ export class LeaderboardScene extends Phaser.Scene {
       const line = `${name}  ${kills}  ${type}`;
 
       const color = i === 0 ? '#ffdd44' : i < 3 ? '#cccccc' : '#888888';
-      const text = this.add.text(20, y, line, textStyle(6, color));
+      const text = this.add.text(20, y, line, textStyle(8, color));
       this.contentGroup.add(text);
     });
   }

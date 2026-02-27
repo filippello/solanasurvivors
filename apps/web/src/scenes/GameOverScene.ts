@@ -53,7 +53,7 @@ export class GameOverScene extends Phaser.Scene {
       this.add.text(cx, killerY, `Killed by: ${killerName}`, textStyle(8, '#ff8844')).setOrigin(0.5);
 
       if (r.killerCollection) {
-        this.add.text(cx, killerY + 14, `Collection: ${r.killerCollection.slice(0, 12)}...`, textStyle(7, '#888888')).setOrigin(0.5);
+        this.add.text(cx, killerY + 14, `Collection: ${r.killerCollection.slice(0, 12)}...`, textStyle(8, '#888888')).setOrigin(0.5);
       }
 
       // Record death on-chain via session key

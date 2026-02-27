@@ -63,7 +63,7 @@ export class ArenaScene extends Phaser.Scene {
     topKillers.forEach((entry, i) => {
       const y = startY + 16 + i * 14;
       const text = `#${i + 1} ${entry.name} - ${entry.killCounter} kills`;
-      this.add.text(GAME_WIDTH / 2, y, text, textStyle(7, i === 0 ? '#ffdd44' : '#cccccc')).setOrigin(0.5);
+      this.add.text(GAME_WIDTH / 2, y, text, textStyle(8, i === 0 ? '#ffdd44' : '#cccccc')).setOrigin(0.5);
     });
   }
 }

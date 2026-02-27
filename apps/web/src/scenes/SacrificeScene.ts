@@ -75,7 +75,7 @@ export class SacrificeScene extends Phaser.Scene {
 
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 20,
       'Your NFT becomes an arena enemy. Other players will face it in battle.',
-      textStyle(5, '#555555')).setOrigin(0.5);
+      textStyle(8, '#555555')).setOrigin(0.5);
   }
 
   private renderNftCards(nfts: NftAsset[]): void {
@@ -104,13 +104,13 @@ export class SacrificeScene extends Phaser.Scene {
       }
 
       const nameY = cy + 30;
-      this.add.text(cx, nameY, nft.name, textStyle(7, '#ffffff')).setOrigin(0.5);
-      this.add.text(cx, nameY + 16, nft.id.slice(0, 8) + '...', textStyle(5, '#666666')).setOrigin(0.5);
+      this.add.text(cx, nameY, nft.name, textStyle(8, '#ffffff')).setOrigin(0.5);
+      this.add.text(cx, nameY + 16, nft.id.slice(0, 8) + '...', textStyle(8, '#555555')).setOrigin(0.5);
 
       const btnY = cy + 65;
       const btnBg = this.add.rectangle(cx, btnY, 110, 24, 0xcc3333)
         .setInteractive({ useHandCursor: true });
-      const btnText = this.add.text(cx, btnY, 'SACRIFICE', textStyle(7, '#ffffff')).setOrigin(0.5);
+      const btnText = this.add.text(cx, btnY, 'SACRIFICE', textStyle(8, '#ffffff')).setOrigin(0.5);
 
       btnBg.on('pointerover', () => btnBg.setFillStyle(0xee4444));
       btnBg.on('pointerout', () => btnBg.setFillStyle(0xcc3333));
@@ -143,7 +143,7 @@ export class SacrificeScene extends Phaser.Scene {
     this.ritualObjects.push(overlay);
 
     // --- Title ---
-    const title = this.add.text(cx, 22, 'SACRIFICE RITUAL', textStyle(10, '#ff3333')).setOrigin(0.5);
+    const title = this.add.text(cx, 22, 'SACRIFICE RITUAL', textStyle(8, '#ff3333')).setOrigin(0.5);
     this.ritualObjects.push(title);
 
     // --- Pentagram (glow + sharp) ---
@@ -217,7 +217,7 @@ export class SacrificeScene extends Phaser.Scene {
     // --- SACRIFICE button ---
     const sBtnBg = this.add.rectangle(cx, ritualCy + 110, 160, 32, 0xcc2222)
       .setInteractive({ useHandCursor: true });
-    const sBtnText = this.add.text(cx, ritualCy + 110, 'SACRIFICE', textStyle(9, '#ffffff')).setOrigin(0.5);
+    const sBtnText = this.add.text(cx, ritualCy + 110, 'SACRIFICE', textStyle(8, '#ffffff')).setOrigin(0.5);
     this.ritualObjects.push(sBtnBg, sBtnText);
 
     // Button pulse
@@ -235,7 +235,7 @@ export class SacrificeScene extends Phaser.Scene {
     sBtnBg.on('pointerout', () => sBtnBg.setFillStyle(0xcc2222));
 
     // --- BACK button ---
-    const backBtn = this.add.text(16, 18, '< BACK', textStyle(7, '#666666'))
+    const backBtn = this.add.text(16, 18, '< BACK', textStyle(8, '#666666'))
       .setInteractive({ useHandCursor: true });
     this.ritualObjects.push(backBtn);
 
@@ -298,13 +298,13 @@ export class SacrificeScene extends Phaser.Scene {
       .setInteractive();
     const popBg = this.add.rectangle(cx, cy, popupW, popupH, 0x1e1e2f)
       .setStrokeStyle(2, 0x7b61ff);
-    const popTitle = this.add.text(cx, cy - 55, 'Confirm Transaction', textStyle(7, '#ffffff'))
+    const popTitle = this.add.text(cx, cy - 55, 'Confirm Transaction', textStyle(8, '#ffffff'))
       .setOrigin(0.5);
-    const popSubtitle = this.add.text(cx, cy - 38, 'localhost:3000', textStyle(5, '#888888'))
+    const popSubtitle = this.add.text(cx, cy - 38, 'localhost:3000', textStyle(8, '#888888'))
       .setOrigin(0.5);
-    const popBody1 = this.add.text(cx, cy - 12, 'Sacrifice NFT to Arena', textStyle(6, '#cccccc'))
+    const popBody1 = this.add.text(cx, cy - 12, 'Sacrifice NFT to Arena', textStyle(8, '#cccccc'))
       .setOrigin(0.5);
-    const popBody2 = this.add.text(cx, cy + 6, 'Network fee: 0.00005 SOL', textStyle(5, '#888888'))
+    const popBody2 = this.add.text(cx, cy + 6, 'Network fee: 0.00005 SOL', textStyle(8, '#888888'))
       .setOrigin(0.5);
 
     const btnW = 90;
@@ -313,13 +313,13 @@ export class SacrificeScene extends Phaser.Scene {
 
     const cancelBg = this.add.rectangle(cx - 55, btnY, btnW, btnH, 0x444455)
       .setInteractive({ useHandCursor: true });
-    const cancelTxt = this.add.text(cx - 55, btnY, 'Cancel', textStyle(7, '#ffffff')).setOrigin(0.5);
+    const cancelTxt = this.add.text(cx - 55, btnY, 'Cancel', textStyle(8, '#ffffff')).setOrigin(0.5);
     cancelBg.on('pointerover', () => cancelBg.setFillStyle(0x555566));
     cancelBg.on('pointerout', () => cancelBg.setFillStyle(0x444455));
 
     const confirmBg = this.add.rectangle(cx + 55, btnY, btnW, btnH, 0x7b61ff)
       .setInteractive({ useHandCursor: true });
-    const confirmTxt = this.add.text(cx + 55, btnY, 'Confirm', textStyle(7, '#ffffff')).setOrigin(0.5);
+    const confirmTxt = this.add.text(cx + 55, btnY, 'Confirm', textStyle(8, '#ffffff')).setOrigin(0.5);
     confirmBg.on('pointerover', () => confirmBg.setFillStyle(0x9b81ff));
     confirmBg.on('pointerout', () => confirmBg.setFillStyle(0x7b61ff));
 

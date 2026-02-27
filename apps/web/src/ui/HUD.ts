@@ -42,7 +42,7 @@ export class HUD {
 
     this.hpBarBg = s.add.rectangle(hpX, hpY, hpWidth, hpHeight, 0x333333).setOrigin(0, 0).setScrollFactor(0).setDepth(100);
     this.hpBarFill = s.add.rectangle(hpX, hpY, hpWidth, hpHeight, 0xcc3333).setOrigin(0, 0).setScrollFactor(0).setDepth(101);
-    this.hpText = s.add.text(hpX + hpWidth / 2, hpY + hpHeight / 2, '100/100', textStyle(6, '#ffffff'))
+    this.hpText = s.add.text(hpX + hpWidth / 2, hpY + hpHeight / 2, '100/100', textStyle(8, '#ffffff'))
       .setOrigin(0.5).setScrollFactor(0).setDepth(102);
 
     // XP Bar
@@ -55,7 +55,7 @@ export class HUD {
       .setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
 
     // Level (below HP)
-    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', textStyle(7, '#ffdd44'))
+    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', textStyle(8, '#ffdd44'))
       .setOrigin(0, 0).setScrollFactor(0).setDepth(100);
 
     // Kill count (top right)
@@ -63,7 +63,7 @@ export class HUD {
       .setOrigin(1, 0).setScrollFactor(0).setDepth(100);
 
     // Gold (below kills)
-    this.goldText = s.add.text(GAME_WIDTH - 10, 20, 'Gold: 0', textStyle(7, '#ffcc44'))
+    this.goldText = s.add.text(GAME_WIDTH - 10, 20, 'Gold: 0', textStyle(8, '#ffcc44'))
       .setOrigin(1, 0).setScrollFactor(0).setDepth(100);
   }
 

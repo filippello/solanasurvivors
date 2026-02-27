@@ -37,7 +37,7 @@ export const TITLE = textStyle(16, '#ffffff');
 export const HEADER = textStyle(12, '#ffdd44');
 
 /** Button label — "START", "ARENA", etc. */
-export const BUTTON = textStyle(10, '#ffffff');
+export const BUTTON = textStyle(8, '#ffffff');
 
 /** Body / stats text */
 export const BODY = textStyle(8, '#ffffff');
@@ -46,14 +46,14 @@ export const BODY = textStyle(8, '#ffffff');
 export const SMALL = textStyle(8, '#aaaaaa');
 
 /** Tiny caption / hint text */
-export const TINY = textStyle(7, '#888888');
+export const TINY = textStyle(8, '#888888');
 
 /** HUD numbers and labels */
-export const HUD_LABEL = textStyle(7, '#ffffff');
+export const HUD_LABEL = textStyle(8, '#ffffff');
 
 /** Damage numbers (in-world, not HUD) */
 export const DAMAGE = {
-  fontSize: '7px',
+  fontSize: '8px',
   fontFamily: FONT,
   color: '#ffffff',
   stroke: '#000000',
