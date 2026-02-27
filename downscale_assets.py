@@ -27,7 +27,7 @@ SPRITES = {
     "player": {
         "src": "assets-src/player",
         "dst": "apps/web/public/assets/player/player.png",
-        "frame_size": 32,
+        "frame_size": 128,
         "layout": "strip",
         "frames": [
             "idle_0", "idle_1", "idle_2", "idle_3",

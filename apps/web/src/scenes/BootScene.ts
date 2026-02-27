@@ -7,7 +7,7 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     // Player spritesheet (8 frames: 4 idle + 4 walk)
-    this.load.spritesheet('player', 'assets/player/player.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('player', 'assets/player/player.png', { frameWidth: 128, frameHeight: 128 });
 
     // Enemies
     this.load.image('enemy-swarm', 'assets/enemies/swarm.png');
@@ -36,16 +36,16 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Player animations
+    // Player animations (4 frames total)
     this.anims.create({
       key: 'player-idle',
-      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-      frameRate: 6,
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 0 }),
+      frameRate: 1,
       repeat: -1,
     });
     this.anims.create({
       key: 'player-walk',
-      frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
       frameRate: 10,
       repeat: -1,
     });

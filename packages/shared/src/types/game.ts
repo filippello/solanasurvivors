@@ -11,4 +11,7 @@ export interface RunResult {
   level: number;
   kills: number;
   gold: number;
+  killerMint?: string | null;
+  killerName?: string | null;
+  killerCollection?: string | null;
 }

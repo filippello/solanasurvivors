@@ -48,10 +48,14 @@ def fill_rect(draw, x, y, w, h, color):
 
 
 def generate_player():
-    """256x32 spritesheet: 8 frames of 32x32 (4 idle + 4 walk)."""
-    W, H = 32, 32
+    """1024x128 spritesheet: 8 frames of 128x128 (4 idle + 4 walk). Drawn at 32x32 then upscaled."""
+    DRAW_W, DRAW_H = 32, 32
+    W, H = 128, 128
     FRAMES = 8
-    img = Image.new("RGBA", (W * FRAMES, H), (0, 0, 0, 0))
+    # Draw at 32x32 then upscale to 128x128
+    small_img = Image.new("RGBA", (DRAW_W * FRAMES, DRAW_H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(small_img)
+    img = small_img  # draw references use img, will upscale at end
     draw = ImageDraw.Draw(img)
 
     blue = hex_to_rgb("#3399ff")
@@ -170,13 +174,15 @@ def generate_player():
     # Idle frames 0-3: subtle breathing animation
     bobs = [0, 0, -1, -1]
     for i in range(4):
-        draw_player_frame(i * W, oy_offset=bobs[i], walk_phase=0)
+        draw_player_frame(i * DRAW_W, oy_offset=bobs[i], walk_phase=0)
 
     # Walk frames 4-7: walking cycle
     for i in range(4):
-        draw_player_frame((i + 4) * W, oy_offset=0, walk_phase=i)
+        draw_player_frame((i + 4) * DRAW_W, oy_offset=0, walk_phase=i)
 
-    save(img, "player", "player.png")
+    # Upscale from 256x32 to 1024x128 (nearest neighbor for pixel art)
+    final_img = small_img.resize((W * FRAMES, H), Image.NEAREST)
+    save(final_img, "player", "player.png")
 
 
 # ─── 2. ENEMIES ───────────────────────────────────────────

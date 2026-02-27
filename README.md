@@ -1,15 +1,233 @@
 # Solana Survivors
 
-A 2D top-down "Vampire Survivors-like" survival game built with Phaser 3, Vite, and TypeScript. Survive 10 minutes against waves of enemies with auto-attacking weapons and upgrade choices.
+A **Vampire Survivors-like** game on Solana where community-deposited NFTs become in-game enemies, and every player death is recorded on-chain — gaslessly — via **MagicBlock Session Keys**.
+
+Built for the **Solana Hackathon** | **MagicBlock Track**
+
+---
+
+## How It Works
+
+1. **Community deposits NFTs** into the Arena vault (Metaplex-verified, collection-whitelisted)
+2. Those NFTs spawn as **enemies in-game** — each with unique types and behaviors
+3. When an NFT enemy kills a player, a **kill counter is incremented on-chain**
+4. Thanks to MagicBlock Session Keys, the player signs **once** at the start of a run — all subsequent death records are **gasless and popup-free**
+5. NFT depositors compete for the **Top Killers** leaderboard based on their NFTs' on-chain kill counts
+
+---
+
+## MagicBlock Integration
+
+The core innovation: **zero-friction on-chain gameplay** via MagicBlock Session Keys.
+
+### The Problem
+
+Every `record_player_death` instruction requires a wallet signature. In a fast-paced game, popup confirmations destroy the experience — and players simply won't do it.
+
+### The Solution
+
+We use MagicBlock's **Session Keys** (`session-keys v3.0.10`) to create an ephemeral keypair that acts on behalf of the player's wallet:
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  START RUN  →  1 wallet popup (createSession)                │
+│                                                              │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐               │
+│  │ init     │    │ top-up   │    │ create   │               │
+│  │ player   │ +  │ 0.01 SOL │ +  │ session  │  = 1 tx      │
+│  │ (if new) │    │ ephemeral│    │ token    │               │
+│  └──────────┘    └──────────┘    └──────────┘               │
+│                                                              │
+│  GAMEPLAY  →  0 popups                                       │
+│                                                              │
+│  Player dies  →  ephemeral key signs  →  record_player_death │
+│  Player dies  →  ephemeral key signs  →  record_player_death │
+│  Player dies  →  ephemeral key signs  →  record_player_death │
+│  ...                                                         │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### On-Chain Architecture
+
+The `PlayerAccount` PDA stores the wallet's pubkey as `authority`. The `#[session_auth_or]` macro validates the ephemeral signer against the `SessionToken`, which points back to the real wallet via `player_account.authority`:
+
+```
+SessionToken (MagicBlock program)
+  ├── session_signer: ephemeral_key
+  ├── authority: wallet_pubkey
+  └── target_program: arena_program_id
+
+PlayerAccount (Arena program)
+  ├── authority: wallet_pubkey  ← must match SessionToken.authority
+  └── bump
+
+record_player_death:
+  signer = ephemeral_key
+  → SessionToken validates ephemeral_key is authorized for wallet
+  → PlayerAccount validates wallet owns this player PDA
+  → Kill counter incremented. Zero popups.
+```
+
+### Verified On-Chain
+
+The session creation transaction contains 3 instructions in a single atomic tx:
+
+| # | Program | Instruction | Purpose |
+|---|---------|-------------|---------|
+| 0 | Arena | `init_player` | Create PlayerAccount PDA (one-time) |
+| 1 | System | `transfer` | Top up ephemeral key with 0.01 SOL (~2000 txs) |
+| 2 | MagicBlock Session Keys | `create_session` | Create SessionToken PDA (7-day validity) |
+
+Death transactions are signed **exclusively by the ephemeral key** — the player's wallet never appears as signer or fee payer:
+
+```
+record_player_death tx:
+  Fee payer:  ephemeral_key (NOT wallet)
+  Signers:    [ephemeral_key] (NOT wallet)
+  Accounts:   enemy_asset, player_account, session_token
+  Cost:       ~0.000005 SOL per death (from ephemeral balance)
+  Wallet:     not involved at all
+```
+
+Example confirmed tx: [`3sMukm...`](https://explorer.solana.com/tx/3sMukmosn7QnWz3CnLHAFoeEgjZ394E6fwZy35CemJtUwyaprNoKWt4qf8fF5djixQqMTX5QJsfno7vJEeeZnV6B?cluster=devnet)
+
+---
+
+## Game Features
+
+### Gameplay
+- **10-minute survival runs** against escalating enemy waves
+- **6 auto-firing weapons** with 5 upgrade levels each (Magic Bolt, Knife Fan, Orbit Aura, Chain Lightning, Bomb Toss, Drone Summon)
+- **7 passive upgrades** with 5 levels each (HP, Armor, Speed, Pickup Radius, Cooldown Reduction, Damage Boost, XP Boost)
+- **7 enemy types** with distinct AI behaviors (Swarm, Fast, Tank, Ranged, Exploder, Elite, Boss)
+- **Boss fight** at 9:30 with phase-based attack patterns
+- **Level-up system** with 3 random upgrade choices per level
+
+### Solana Integration
+- **Wallet connect** (Phantom / Solflare) with silent auto-reconnect
+- **NFT deposit** to the Arena vault with full Metaplex verification (collection, token standard, supply)
+- **MagicBlock Session Keys** for gasless death recording
+- **On-chain kill counter** per deposited NFT
+- **Community Arena** UI showing deposited enemies and top killers
+- **Leaderboard** with on-chain kill data + local run scores
+
+### Arena System
+- NFTs from whitelisted collections can be deposited into the vault
+- Each deposited NFT maps to an enemy type and spawns in-game
+- When that NFT enemy kills a player, its `kill_counter` increments on-chain
+- Depositors compete for recognition via the Top Killers leaderboard
+- NFT images are fetched from Helius DAS API and displayed in the Arena UI
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Game Engine | Phaser 3 |
+| Frontend | TypeScript, Vite |
+| Blockchain | Solana (devnet), Anchor 0.32.1 |
+| Session Keys | MagicBlock `session-keys` v3.0.10 |
+| NFT Standard | Metaplex Token Metadata |
+| NFT Indexing | Helius DAS API |
+| Wallet | Phantom / Solflare (browser extension) |
+
+---
+
+## Architecture
+
+```
+solanasurvivors/
+├── packages/
+│   ├── shared/          # Types, constants, math (zero dependencies)
+│   └── core/            # Game logic: weapons, enemies, spawning, upgrades
+│                          (framework-agnostic — no Phaser imports)
+├── apps/
+│   └── web/             # Phaser 3 client + Solana integrations
+│       ├── scenes/      # Boot, Home, Run, Pause, LevelUp, GameOver, Arena, Leaderboard
+│       ├── entities/    # Player, Enemy, Projectile, XPGem
+│       ├── weapons/     # 6 weapon implementations
+│       ├── systems/     # Combat, Spawning, Upgrades, Input
+│       ├── ui/          # HUD, DamageNumbers, TextStyles
+│       └── integration/ # Wallet, SessionKeys, EnemyPool, NFTs, Leaderboard
+└── programs/
+    └── arena/           # Anchor program (6 instructions, 5 PDAs)
+```
+
+The monorepo separates concerns: `shared` has zero dependencies, `core` is framework-agnostic (could power a Unity or mobile client), and `web` is the Phaser-specific implementation.
+
+---
+
+## On-Chain Program
+
+**Program ID:** [`8WUCDRofKewY1oGh93eGa1dpacVjYV1LGgbZZN5JKkS4`](https://explorer.solana.com/address/8WUCDRofKewY1oGh93eGa1dpacVjYV1LGgbZZN5JKkS4?cluster=devnet)
+**Network:** Solana Devnet
+
+### Instructions
+
+| Instruction | Auth | Description |
+|-------------|------|-------------|
+| `init_arena` | Admin | Create ArenaConfig + ArenaVault PDAs |
+| `set_whitelist` | Admin | Set whitelisted NFT collections (max 5) |
+| `deposit_nft` | User | Deposit Metaplex-verified NFT into vault, create EnemyAssetAccount |
+| `init_player` | User | Create PlayerAccount PDA (one-time, stores wallet authority for session auth) |
+| `record_player_death` | Session Key / Wallet | Increment kill counter (gasless via MagicBlock) |
+| `delegate_enemy_asset` | Admin | Delegate to MagicBlock Ephemeral Rollups |
+
+### PDAs
+
+| PDA | Seeds | Purpose |
+|-----|-------|---------|
+| ArenaConfig | `["arena_config"]` | Admin settings, whitelist |
+| ArenaVault | `["arena_vault"]` | NFT custody |
+| PlayerAccount | `["player", wallet]` | Session key authority anchor |
+| EnemyAsset | `["enemy_asset", mint]` | Per-NFT kill counter, metadata |
+| SessionToken | `["session_token", program, ephemeral, wallet]` | MagicBlock session (external program) |
+
+---
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- Phantom or Solflare browser extension
+- (Optional) Anchor CLI 0.32.1 for program development
+
+### Build & Run
+
 ```bash
+# Install dependencies
 npm install
+
+# Build all packages (shared → core → web)
+npm run build
+
+# Start dev server (localhost:3000)
 npm run dev
 ```
 
-Open http://localhost:3000 in your browser.
+### Environment Variables
+
+Create `apps/web/.env`:
+
+```env
+VITE_SOLANA_RPC_URL=https://api.devnet.solana.com
+VITE_ARENA_PROGRAM_ID=8WUCDRofKewY1oGh93eGa1dpacVjYV1LGgbZZN5JKkS4
+VITE_HELIUS_API_KEY=your_helius_key
+```
+
+### Deploy Program (optional)
+
+```bash
+anchor build
+anchor deploy --provider.cluster devnet
+
+# Setup arena (init, whitelist, deposit NFTs)
+cd scripts && npm install && npx tsx setup-devnet.ts
+```
+
+---
 
 ## Controls
 
@@ -17,100 +235,78 @@ Open http://localhost:3000 in your browser.
 |-------|--------|
 | WASD / Arrow Keys | Move |
 | Gamepad Left Stick | Move |
-| ESC | Pause / Resume |
+| ESC | Pause |
 | Mouse Click | Select upgrades & menu buttons |
 
 Weapons fire automatically at the nearest enemy. No aiming required.
 
+---
+
 ## How to Play
 
 1. Click **START** on the title screen
-2. Move your character to dodge enemies
-3. Enemies are killed automatically by your weapons
+2. If wallet connected: approve the session key (1 popup, enables gasless kills)
+3. Move your character to dodge enemies — weapons fire automatically
 4. Collect blue XP gems dropped by enemies
 5. On level up, choose 1 of 3 upgrades (new weapons or passive stat boosts)
-6. Survive 10 minutes to win
-7. A boss appears at 9:30 - defeat it or survive until 10:00
+6. Survive 10 minutes to win, or die to an NFT enemy (their kill counter goes up!)
+7. Check the **ARENA** to see top killers and deposit your own NFTs
 
-## Weapons
+---
 
-| Weapon | Description |
-|--------|-------------|
-| Magic Bolt | Fires homing bolts at the nearest enemy (starting weapon) |
-| Knife Fan | Fires a spread of knives in the movement direction |
-| Orbit Aura | Rotating damage orbs around the player |
-| Chain Lightning | Hits nearest enemy then chains to nearby targets |
-| Bomb Toss | Lobs a bomb that explodes in an AOE |
-| Drone Summon | Orbiting drones that fire at nearby enemies |
+## Enemies
 
-All weapons can be upgraded to level 5.
-
-## Passive Upgrades
-
-Max HP, Armor, Move Speed, Pickup Radius, Cooldown Reduction, Damage Boost, XP Boost - each upgradeable to level 5.
-
-## Enemy Types
-
-| Type | Behavior | Appears |
-|------|----------|---------|
+| Type | Behavior | Appears At |
+|------|----------|-----------|
 | Swarm (green) | Chase player | 0:00 |
 | Fast (yellow) | Fast chase | 1:00 |
 | Tank (red) | Slow, high HP | 3:00 |
 | Ranged (purple) | Keeps distance, fires projectiles | 4:00 |
 | Exploder (orange) | Rushes and detonates on proximity | 5:00 |
-| Elite (white) | Strong, periodic dash | 7:00 |
-| Boss (crimson) | Phase-based (chase + burst fire) | 9:30 |
+| Elite (white) | Strong, periodic dash attacks | 7:00 |
+| Boss (crimson) | Phase-based: chase + burst fire | 9:30 |
 
-## Architecture
+---
 
-```
-solanasurvivors/
-├── packages/
-│   ├── shared/          # Types, constants, math utils
-│   └── core/            # Framework-agnostic game logic
-│       ├── balance/     # Weapon, passive, enemy, XP, spawn tables
-│       ├── spawn/       # Pure SpawnDirector logic
-│       ├── stats/       # PlayerStats computation
-│       ├── rng/         # Seeded RNG
-│       ├── upgrade/     # UpgradePool selection logic
-│       └── integration/ # Solana adapter interfaces
-└── apps/
-    └── web/             # Phaser 3 game client
-        └── src/
-            ├── scenes/      # Boot, Home, Run, Pause, LevelUp, GameOver
-            ├── entities/    # Player, Enemy, Projectile, XPGem
-            ├── weapons/     # BaseWeapon + 6 weapon implementations
-            ├── systems/     # SpawnDirector, Combat, Upgrade, Input
-            ├── ui/          # HUD, DamageNumber
-            └── integration/ # DummyAdapters (Solana stubs)
-```
+## Weapons
 
-`packages/core` is framework-agnostic (no Phaser dependency). All balance data lives there so it can be shared with a future server or different frontend.
+| Weapon | Description |
+|--------|-------------|
+| Magic Bolt | Homing bolts at the nearest enemy (starting weapon) |
+| Knife Fan | Spread of knives in movement direction |
+| Orbit Aura | Rotating damage orbs around the player |
+| Chain Lightning | Hits nearest enemy, chains to nearby targets |
+| Bomb Toss | Lobs bombs that explode in AoE |
+| Drone Summon | Orbiting drones that independently fire at enemies |
+
+All weapons upgradeable to level 5.
+
+---
+
+## Devnet Addresses
+
+| Account | Address |
+|---------|---------|
+| Arena Program | `8WUCDRofKewY1oGh93eGa1dpacVjYV1LGgbZZN5JKkS4` |
+| ArenaConfig PDA | `93ir4MyzbppTT59NYNTHjEwqKoyTyaGhFfHwPAmj4D9t` |
+| ArenaVault PDA | `4wWwH5FQZadNEGEPwZBwQvqqqq53Z5NoeZjLec6zB5dj` |
+| Collection Mint | `DmAgbcrmyAYkEYyg5NNkDMQyC8Zuaruv6JcAnVUaviny` |
+| MagicBlock Session Keys | `KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5` |
+
+---
 
 ## Tweaking Balance
 
-All game balance is in `packages/core/src/balance/`:
+All game balance lives in `packages/core/src/balance/`:
 
-- **weapons.ts** - Damage, cooldown, projectile count, speed, pierce per level
-- **passives.ts** - Stat bonus values per level
-- **enemies.ts** - HP, speed, damage, XP value, color per enemy type
-- **xpCurve.ts** - XP required per player level
-- **spawnTable.ts** - Which enemies appear at which minute, base spawn rate
+- **weapons.ts** — Damage, cooldown, projectile count, speed, pierce per level
+- **passives.ts** — Stat bonus values per level
+- **enemies.ts** — HP, speed, damage, XP value per enemy type
+- **xpCurve.ts** — XP required per player level
+- **spawnTable.ts** — Which enemies appear at which minute, spawn rates
 
-## Solana Integration (Stubbed)
+---
 
-The following interfaces are defined in `packages/core/src/integration/` but not yet active:
+## License
 
-- `IWalletAdapter` - Wallet connect/disconnect
-- `IAssetRegistry` - NFT skin ownership
-- `ISacrificeGate` - Token-gated run access + result submission
-
-Dummy implementations exist in `apps/web/src/integration/DummyAdapters.ts`.
-
-## Building
-
-```bash
-npm run build
-```
-
-Output goes to `apps/web/dist/`.
+MIT

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, UpgradeChoice } from '@solanasurvivors/shared';
+import { HEADER, SMALL, TINY, textStyle } from '../ui/textStyles';
 
 export class LevelUpScene extends Phaser.Scene {
   private choices: UpgradeChoice[] = [];
@@ -18,28 +19,19 @@ export class LevelUpScene extends Phaser.Scene {
     // Dim overlay
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.6);
 
-    this.add.text(GAME_WIDTH / 2, 40, 'LEVEL UP!', {
-      fontSize: '18px',
-      color: '#ffdd44',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-    }).setOrigin(0.5);
+    this.add.text(GAME_WIDTH / 2, 40, 'LEVEL UP!', HEADER).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 60, 'Choose an upgrade:', {
-      fontSize: '10px',
-      color: '#cccccc',
-      fontFamily: 'monospace',
-    }).setOrigin(0.5);
+    this.add.text(GAME_WIDTH / 2, 58, 'Choose an upgrade:', SMALL).setOrigin(0.5);
 
     const cardWidth = 140;
-    const cardHeight = 90;
+    const cardHeight = 100;
     const gap = 15;
     const totalWidth = this.choices.length * cardWidth + (this.choices.length - 1) * gap;
     const startX = (GAME_WIDTH - totalWidth) / 2 + cardWidth / 2;
 
     this.choices.forEach((choice, i) => {
       const cx = startX + i * (cardWidth + gap);
-      const cy = GAME_HEIGHT / 2;
+      const cy = GAME_HEIGHT / 2 + 5;
 
       // Card background
       const bg = this.add.rectangle(cx, cy, cardWidth, cardHeight, 0x2a2a4e)
@@ -48,38 +40,22 @@ export class LevelUpScene extends Phaser.Scene {
 
       // Type badge
       const badgeColor = choice.type === 'weapon' ? 0xcc4444 : 0x44cc44;
-      this.add.rectangle(cx, cy - cardHeight / 2 + 8, 40, 12, badgeColor, 0.8)
+      this.add.rectangle(cx, cy - cardHeight / 2 + 10, 50, 14, badgeColor, 0.8)
         .setStrokeStyle(1, 0xffffff, 0.3);
-      this.add.text(cx, cy - cardHeight / 2 + 8, choice.type.toUpperCase(), {
-        fontSize: '6px',
-        color: '#ffffff',
-        fontFamily: 'monospace',
-        fontStyle: 'bold',
-      }).setOrigin(0.5);
+      this.add.text(cx, cy - cardHeight / 2 + 10, choice.type.toUpperCase(), textStyle(6, '#ffffff', true)).setOrigin(0.5);
 
       // Name
-      this.add.text(cx, cy - 12, choice.name, {
-        fontSize: '10px',
-        color: '#ffffff',
-        fontFamily: 'monospace',
-        fontStyle: 'bold',
-      }).setOrigin(0.5);
+      this.add.text(cx, cy - 10, choice.name, textStyle(8, '#ffffff', true)).setOrigin(0.5);
 
       // Level
       const levelText = choice.currentLevel === 0
         ? 'NEW'
-        : `Lv ${choice.currentLevel} → ${choice.nextLevel}`;
-      this.add.text(cx, cy + 3, levelText, {
-        fontSize: '8px',
-        color: '#aaaaff',
-        fontFamily: 'monospace',
-      }).setOrigin(0.5);
+        : `Lv ${choice.currentLevel} > ${choice.nextLevel}`;
+      this.add.text(cx, cy + 6, levelText, textStyle(7, '#aaaaff')).setOrigin(0.5);
 
       // Description
-      this.add.text(cx, cy + 18, choice.description, {
-        fontSize: '7px',
-        color: '#aaaaaa',
-        fontFamily: 'monospace',
+      this.add.text(cx, cy + 22, choice.description, {
+        ...TINY,
         wordWrap: { width: cardWidth - 10 },
         align: 'center',
       }).setOrigin(0.5);

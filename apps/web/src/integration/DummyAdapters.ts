@@ -18,6 +18,16 @@ export class DummyWalletAdapter implements IWalletAdapter {
   isConnected(): boolean {
     return false;
   }
+
+  async signAndSendTransaction(_tx: Uint8Array): Promise<string> {
+    console.log('[DummyWallet] signAndSendTransaction() called - no-op');
+    return '';
+  }
+
+  async signTransaction(_tx: Uint8Array): Promise<Uint8Array> {
+    console.log('[DummyWallet] signTransaction() called - no-op');
+    return new Uint8Array();
+  }
 }
 
 export class DummyAssetRegistry implements IAssetRegistry {

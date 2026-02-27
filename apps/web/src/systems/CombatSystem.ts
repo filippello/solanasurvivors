@@ -56,6 +56,12 @@ export class CombatSystem {
         enemy.resetDamageCooldown();
         const dead = player.takeDamage(enemy.eState.damage);
 
+        // Track last-hit enemy mint for arena kill attribution
+        const mint = (enemy as any).nftMint as string | undefined;
+        if (mint) {
+          player.pState.lastHitEnemyMint = mint;
+        }
+
         // Damage number on player
         runScene.damageNumbers.spawn(player.x, player.y, enemy.eState.damage, '#ff4444');
 
@@ -77,6 +83,13 @@ export class CombatSystem {
         if (!proj.active || proj.owner !== 'enemy') return;
 
         const dead = player.takeDamage(proj.damage);
+
+        // Track last-hit from projectile's source enemy mint
+        const mint = (proj as any).sourceNftMint as string | undefined;
+        if (mint) {
+          player.pState.lastHitEnemyMint = mint;
+        }
+
         runScene.damageNumbers.spawn(player.x, player.y, proj.damage, '#ff4444');
         this.scene.cameras.main.shake(100, 0.005);
         proj.deactivate();

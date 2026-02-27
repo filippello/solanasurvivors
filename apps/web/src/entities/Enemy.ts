@@ -30,7 +30,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
-    this.body.setCircle(def.radius);
+    const texW = this.texture.getSourceImage().width;
+    const texH = this.texture.getSourceImage().height;
+    this.body.setCircle(def.radius, texW / 2 - def.radius, texH / 2 - def.radius);
     this.damageCooldown = 0;
     this.shootTimer = 2000;
     this.dashTimer = 0;

@@ -23,7 +23,9 @@ export class Player extends Phaser.GameObjects.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.body.setCircle(PLAYER_RADIUS);
+    const texW = this.texture.getSourceImage().width / 4; // spritesheet frame width
+    const texH = this.texture.getSourceImage().height;
+    this.body.setCircle(PLAYER_RADIUS, texW / 2 - PLAYER_RADIUS, texH / 2 - PLAYER_RADIUS);
 
     this.stats = new PlayerStats();
 
@@ -41,6 +43,7 @@ export class Player extends Phaser.GameObjects.Sprite {
       gold: 0,
       kills: 0,
       invulnerable: false,
+      lastHitEnemyMint: null,
     };
   }
 

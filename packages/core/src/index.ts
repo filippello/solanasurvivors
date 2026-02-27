@@ -12,3 +12,5 @@ export { UpgradePool } from './upgrade/UpgradePool';
 export type { IWalletAdapter } from './integration/IWalletAdapter';
 export type { IAssetRegistry } from './integration/IAssetRegistry';
 export type { ISacrificeGate } from './integration/ISacrificeGate';
+export type { INftProvider, NftAsset } from './integration/INftProvider';
+export type { IServiceRegistry } from './integration/ServiceRegistry';

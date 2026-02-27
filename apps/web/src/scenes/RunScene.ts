@@ -12,6 +12,9 @@ import { UpgradeSystem } from '../systems/UpgradeSystem';
 import { WeaponManager } from '../weapons/WeaponManager';
 import { HUD } from '../ui/HUD';
 import { DamageNumberManager } from '../ui/DamageNumber';
+import { getServices } from '../integration/GameServices';
+import type { EnemyNftEntry } from '../integration/EnemyPoolService';
+import { textStyle, SMALL } from '../ui/textStyles';
 
 export class RunScene extends Phaser.Scene {
   player!: Player;
@@ -32,6 +35,7 @@ export class RunScene extends Phaser.Scene {
   private groundLayer!: Phaser.GameObjects.TileSprite;
   private gameRunning = true;
   private paused = false;
+  private runNftPool: EnemyNftEntry[] = [];
 
   constructor() {
     super({ key: 'RunScene' });
@@ -43,6 +47,47 @@ export class RunScene extends Phaser.Scene {
     this.paused = false;
     this.coreSpawnDirector = new CoreSpawnDirector();
     this.upgradePool = new UpgradePool();
+
+    // Select enemies from the NFT pool for this run
+    try {
+      const { enemyPool } = getServices();
+      this.runNftPool = enemyPool.selectForRun(20);
+      console.log(`[RunScene] NFT pool: ${this.runNftPool.length} enemies selected`, this.runNftPool.map(e => `${e.name}(${e.enemyType})`));
+    } catch {
+      this.runNftPool = [];
+    }
+
+    // Create session key (1 wallet popup) so deaths are gasless.
+    // Game is paused until the session is created — otherwise the player
+    // could die before the session is ready.
+    try {
+      const { sessionKeys, wallet } = getServices();
+      if (wallet.isConnected() && !sessionKeys.hasSession()) {
+        this.paused = true;
+        this.physics.pause();
+
+        const overlay = this.add.rectangle(0, 0, GAME_WIDTH * 3, GAME_HEIGHT * 3, 0x000000, 0.6)
+          .setDepth(999).setScrollFactor(0);
+        const label = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 10,
+          'Approve session in wallet...', textStyle(8, '#ffdd44', true))
+          .setOrigin(0.5).setDepth(1000).setScrollFactor(0);
+        const hint = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 10,
+          'Sign once to enable gasless kills', SMALL)
+          .setOrigin(0.5).setDepth(1000).setScrollFactor(0);
+
+        sessionKeys.createSession().then((ok) => {
+          overlay.destroy();
+          label.destroy();
+          hint.destroy();
+          this.paused = false;
+          this.physics.resume();
+          if (ok) console.log('[RunScene] Session created — deaths will be gasless');
+          else console.warn('[RunScene] Session creation failed — deaths will not be recorded');
+        });
+      }
+    } catch {
+      // Session is optional — game works without wallet
+    }
 
     // Infinite tiling ground
     this.groundLayer = this.add.tileSprite(0, 0, GAME_WIDTH * 3, GAME_HEIGHT * 3, 'ground-tile')
@@ -58,7 +103,9 @@ export class RunScene extends Phaser.Scene {
     this.xpGemGroup = this.add.group({ classType: XPGem, runChildUpdate: false });
 
     // Systems
-    this.spawnDirector = new PhaserSpawnDirector(this, this.player, this.enemyGroup, this.coreSpawnDirector);
+    this.spawnDirector = new PhaserSpawnDirector(
+      this, this.player, this.enemyGroup, this.coreSpawnDirector, this.runNftPool,
+    );
     this.weaponManager = new WeaponManager();
     this.upgradeSystem = new UpgradeSystem(this.player, this.weaponManager, this.upgradePool);
     this.combatSystem = new CombatSystem(this);
@@ -139,12 +186,29 @@ export class RunScene extends Phaser.Scene {
   private onPlayerDeath(): void {
     if (!this.gameRunning) return;
     this.gameRunning = false;
+
+    // Resolve killer NFT info from lastHitEnemyMint
+    const killerMint = this.player.pState.lastHitEnemyMint;
+    let killerName: string | null = null;
+    let killerCollection: string | null = null;
+
+    if (killerMint) {
+      const nftEntry = this.runNftPool.find((e) => e.mint === killerMint);
+      if (nftEntry) {
+        killerName = nftEntry.name;
+        killerCollection = nftEntry.collection;
+      }
+    }
+
     this.scene.start('GameOverScene', {
       victory: false,
       timeSurvivedMs: this.elapsedMs,
       level: this.player.pState.level,
       kills: this.player.pState.kills,
       gold: this.player.pState.gold,
+      killerMint,
+      killerName,
+      killerCollection,
     });
   }
 
@@ -225,6 +289,11 @@ export class RunScene extends Phaser.Scene {
         const edx = this.player.x - enemy.x;
         const edy = this.player.y - enemy.y;
         if (edx * edx + edy * edy < 40 * 40) {
+          // Track exploder as last hit
+          const mint = (enemy as any).nftMint as string | undefined;
+          if (mint) {
+            this.player.pState.lastHitEnemyMint = mint;
+          }
           this.player.takeDamage(enemy.getExplodeDamage());
           if (this.player.pState.hp <= 0) {
             this.onPlayerDeath();

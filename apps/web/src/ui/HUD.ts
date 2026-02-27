@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, RUN_DURATION_MS, PlayerState } from '@solanasurvivors/shared';
+import { HUD_LABEL, textStyle } from './textStyles';
 
 export class HUD {
   private scene: Phaser.Scene;
@@ -25,15 +26,12 @@ export class HUD {
   // Gold
   private goldText!: Phaser.GameObjects.Text;
 
-  private container!: Phaser.GameObjects.Container;
-
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.create();
   }
 
   private create(): void {
-    // Use a camera-ignoring container by setting scrollFactor
     const s = this.scene;
 
     // HP Bar
@@ -44,11 +42,8 @@ export class HUD {
 
     this.hpBarBg = s.add.rectangle(hpX, hpY, hpWidth, hpHeight, 0x333333).setOrigin(0, 0).setScrollFactor(0).setDepth(100);
     this.hpBarFill = s.add.rectangle(hpX, hpY, hpWidth, hpHeight, 0xcc3333).setOrigin(0, 0).setScrollFactor(0).setDepth(101);
-    this.hpText = s.add.text(hpX + hpWidth / 2, hpY + hpHeight / 2, '100/100', {
-      fontSize: '6px',
-      color: '#ffffff',
-      fontFamily: 'monospace',
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(102);
+    this.hpText = s.add.text(hpX + hpWidth / 2, hpY + hpHeight / 2, '100/100', textStyle(6, '#ffffff'))
+      .setOrigin(0.5).setScrollFactor(0).setDepth(102);
 
     // XP Bar
     const xpY = hpY + hpHeight + 2;
@@ -56,34 +51,20 @@ export class HUD {
     this.xpBarFill = s.add.rectangle(hpX, xpY, 0, 4, 0x44aaff).setOrigin(0, 0).setScrollFactor(0).setDepth(101);
 
     // Timer (top center)
-    this.timerText = s.add.text(GAME_WIDTH / 2, 8, '0:00', {
-      fontSize: '12px',
-      color: '#ffffff',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-    }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
+    this.timerText = s.add.text(GAME_WIDTH / 2, 8, '0:00', textStyle(10, '#ffffff', true))
+      .setOrigin(0.5, 0).setScrollFactor(0).setDepth(100);
 
     // Level (below HP)
-    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', {
-      fontSize: '8px',
-      color: '#ffdd44',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-    }).setOrigin(0, 0).setScrollFactor(0).setDepth(100);
+    this.levelText = s.add.text(hpX, xpY + 7, 'Lv 1', textStyle(7, '#ffdd44', true))
+      .setOrigin(0, 0).setScrollFactor(0).setDepth(100);
 
     // Kill count (top right)
-    this.killText = s.add.text(GAME_WIDTH - 10, 8, 'Kills: 0', {
-      fontSize: '8px',
-      color: '#cccccc',
-      fontFamily: 'monospace',
-    }).setOrigin(1, 0).setScrollFactor(0).setDepth(100);
+    this.killText = s.add.text(GAME_WIDTH - 10, 8, 'Kills: 0', HUD_LABEL)
+      .setOrigin(1, 0).setScrollFactor(0).setDepth(100);
 
     // Gold (below kills)
-    this.goldText = s.add.text(GAME_WIDTH - 10, 20, 'Gold: 0', {
-      fontSize: '8px',
-      color: '#ffcc44',
-      fontFamily: 'monospace',
-    }).setOrigin(1, 0).setScrollFactor(0).setDepth(100);
+    this.goldText = s.add.text(GAME_WIDTH - 10, 20, 'Gold: 0', textStyle(7, '#ffcc44'))
+      .setOrigin(1, 0).setScrollFactor(0).setDepth(100);
   }
 
   update(playerState: PlayerState, elapsedMs: number): void {

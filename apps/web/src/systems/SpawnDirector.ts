@@ -3,6 +3,7 @@ import { SPAWN_MARGIN, GAME_WIDTH, GAME_HEIGHT, EnemyType } from '@solanasurvivo
 import { SpawnDirector as CoreSpawnDirector } from '@solanasurvivors/core';
 import { Enemy } from '../entities/Enemy';
 import { Player } from '../entities/Player';
+import type { EnemyNftEntry } from '../integration/EnemyPoolService';
 
 export class PhaserSpawnDirector {
   private core: CoreSpawnDirector;
@@ -10,11 +11,29 @@ export class PhaserSpawnDirector {
   private enemyGroup: Phaser.GameObjects.Group;
   private player: Player;
 
-  constructor(scene: Phaser.Scene, player: Player, enemyGroup: Phaser.GameObjects.Group, core: CoreSpawnDirector) {
+  /** NFT entries selected for this run, keyed by enemy type for fast lookup. */
+  private nftPoolByType: Map<EnemyType, EnemyNftEntry[]> = new Map();
+
+  constructor(
+    scene: Phaser.Scene,
+    player: Player,
+    enemyGroup: Phaser.GameObjects.Group,
+    core: CoreSpawnDirector,
+    nftPool?: EnemyNftEntry[],
+  ) {
     this.scene = scene;
     this.player = player;
     this.enemyGroup = enemyGroup;
     this.core = core;
+
+    // Index NFT entries by their mapped enemy type
+    if (nftPool && nftPool.length > 0) {
+      for (const entry of nftPool) {
+        const list = this.nftPoolByType.get(entry.enemyType) || [];
+        list.push(entry);
+        this.nftPoolByType.set(entry.enemyType, list);
+      }
+    }
   }
 
   update(elapsedMs: number): void {
@@ -36,8 +55,21 @@ export class PhaserSpawnDirector {
     }
 
     const pos = this.getSpawnPosition();
-    const hpMultiplier = 1; // Could scale with time
+    const hpMultiplier = 1;
     enemy.spawn(pos.x, pos.y, type, hpMultiplier);
+
+    // Assign NFT mint to this enemy instance (if pool has entries for this type)
+    const candidates = this.nftPoolByType.get(type);
+    if (candidates && candidates.length > 0) {
+      const pick = candidates[Math.floor(Math.random() * candidates.length)];
+      (enemy as any).nftMint = pick.mint;
+      (enemy as any).nftName = pick.name;
+      (enemy as any).nftCollection = pick.collection;
+    } else {
+      (enemy as any).nftMint = undefined;
+      (enemy as any).nftName = undefined;
+      (enemy as any).nftCollection = undefined;
+    }
   }
 
   private getSpawnPosition(): { x: number; y: number } {

@@ -12,6 +12,7 @@ export interface PlayerState {
   gold: number;
   kills: number;
   invulnerable: boolean;
+  lastHitEnemyMint: string | null;
 }
 
 export type EnemyType = 'swarm' | 'fast' | 'tank' | 'ranged' | 'exploder' | 'elite' | 'boss';

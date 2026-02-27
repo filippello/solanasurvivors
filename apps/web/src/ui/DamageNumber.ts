@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { DAMAGE } from './textStyles';
 
 export class DamageNumberManager {
   private scene: Phaser.Scene;
@@ -11,14 +12,7 @@ export class DamageNumberManager {
   spawn(x: number, y: number, amount: number, color = '#ffffff'): void {
     let text = this.pool.find(t => !t.active);
     if (!text) {
-      text = this.scene.add.text(0, 0, '', {
-        fontSize: '7px',
-        color,
-        fontFamily: 'monospace',
-        fontStyle: 'bold',
-        stroke: '#000000',
-        strokeThickness: 1,
-      });
+      text = this.scene.add.text(0, 0, '', DAMAGE);
       text.setDepth(200);
       this.pool.push(text);
     }
