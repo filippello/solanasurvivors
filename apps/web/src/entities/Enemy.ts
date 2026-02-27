@@ -7,6 +7,9 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
   eState!: EnemyState;
   private damageCooldown = 0;
+  private bobPhase = 0;
+  private baseScaleX = 1;
+  private baseScaleY = 1;
 
   // Type-specific timers
   private shootTimer = 0;
@@ -27,6 +30,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.setPosition(x, y);
     this.setTexture(`enemy-${type}`);
     this.setDisplaySize(def.radius * 2, def.radius * 2);
+    this.baseScaleX = this.scaleX;
+    this.baseScaleY = this.scaleY;
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
@@ -34,6 +39,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     const texH = this.texture.getSourceImage().height;
     this.body.setCircle(def.radius, texW / 2 - def.radius, texH / 2 - def.radius);
     this.damageCooldown = 0;
+    this.bobPhase = Math.random() * Math.PI * 2;
     this.shootTimer = 2000;
     this.dashTimer = 0;
     this.dashCooldown = 5000;
@@ -75,6 +81,21 @@ export class Enemy extends Phaser.GameObjects.Sprite {
 
     this.eState.x = this.x;
     this.eState.y = this.y;
+
+    // Squash & stretch "breathing" animation (like Vampire Survivors)
+    const speed = Math.sqrt(
+      this.body.velocity.x * this.body.velocity.x +
+      this.body.velocity.y * this.body.velocity.y,
+    );
+    const bobSpeed = speed > 5 ? 3 : 1;
+    const bobAmount = speed > 5 ? 0.08 : 0.04;
+    this.bobPhase += (delta / 1000) * bobSpeed * Math.PI * 2;
+    const s = Math.sin(this.bobPhase) * bobAmount;
+    this.setScale(this.baseScaleX * (1 + s), this.baseScaleY * (1 - s));
+
+    // Flip sprite to face movement direction
+    if (this.body.velocity.x < -5) this.setFlipX(true);
+    else if (this.body.velocity.x > 5) this.setFlipX(false);
   }
 
   chaseTarget(tx: number, ty: number): void {
