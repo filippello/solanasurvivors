@@ -21,6 +21,7 @@ const MINT_TYPE_OVERRIDES: Record<string, EnemyType> = {
 
 export interface EnemyNftEntry {
   mint: string;
+  depositor: string;
   collection: string;
   killCounter: number;
   name: string;
@@ -85,7 +86,7 @@ export class EnemyPoolService {
         const data = acc.account.data;
         // Skip 8-byte discriminator
         const mint = new PublicKey(data.subarray(8, 40)).toBase58();
-        // depositor at 40..72
+        const depositor = new PublicKey(data.subarray(40, 72)).toBase58();
         // deposited_at at 72..80
         const collection = new PublicKey(data.subarray(80, 112)).toBase58();
         // kill_counter at 112..120 (little-endian u64)
@@ -93,6 +94,7 @@ export class EnemyPoolService {
 
         return {
           mint,
+          depositor,
           collection,
           killCounter,
           name: `NFT ${mint.slice(0, 6)}`,

@@ -85,7 +85,8 @@ export class LeaderboardScene extends Phaser.Scene {
     }
 
     // Header row
-    const header = this.add.text(20, startY, 'PLAYER     SCORE  LVL', textStyle(8, '#888888'));
+    const cx = GAME_WIDTH / 2;
+    const header = this.add.text(cx, startY, 'PLAYER     SCORE  LVL', textStyle(8, '#888888')).setOrigin(0.5);
     this.contentGroup.add(header);
 
     entries.forEach((entry, i) => {
@@ -96,7 +97,7 @@ export class LeaderboardScene extends Phaser.Scene {
       const line = `${player}  ${score}  ${level}`;
 
       const color = i === 0 ? '#ffdd44' : i < 3 ? '#cccccc' : '#888888';
-      const text = this.add.text(20, y, line, textStyle(8, color));
+      const text = this.add.text(cx, y, line, textStyle(8, color)).setOrigin(0.5);
       this.contentGroup.add(text);
     });
   }
@@ -113,7 +114,8 @@ export class LeaderboardScene extends Phaser.Scene {
     }
 
     // Header row
-    const header = this.add.text(20, startY, 'ENEMY        KILLS  TYPE', textStyle(8, '#888888'));
+    const cx = GAME_WIDTH / 2;
+    const header = this.add.text(cx, startY, 'ENEMY        KILLS  TYPE', textStyle(8, '#888888')).setOrigin(0.5);
     this.contentGroup.add(header);
 
     topKillers.forEach((entry, i) => {
@@ -124,7 +126,7 @@ export class LeaderboardScene extends Phaser.Scene {
       const line = `${name}  ${kills}  ${type}`;
 
       const color = i === 0 ? '#ffdd44' : i < 3 ? '#cccccc' : '#888888';
-      const text = this.add.text(20, y, line, textStyle(8, color));
+      const text = this.add.text(cx, y, line, textStyle(8, color)).setOrigin(0.5);
       this.contentGroup.add(text);
     });
   }
