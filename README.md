@@ -8,11 +8,12 @@ Built for the **Solana Hackathon** | **MagicBlock Track**
 
 ## How It Works
 
-1. **Community deposits NFTs** into the Arena vault (Metaplex-verified, collection-whitelisted)
-2. Those NFTs spawn as **enemies in-game** — each with unique types and behaviors
-3. When an NFT enemy kills a player, a **kill counter is incremented on-chain**
-4. Thanks to MagicBlock Session Keys, the player signs **once** at the start of a run — all subsequent death records are **gasless and popup-free**
-5. NFT depositors compete for the **Top Killers** leaderboard based on their NFTs' on-chain kill counts
+1. **Community sacrifices NFTs** into the Arena vault through an animated ritual (Metaplex-verified, collection-whitelisted)
+2. The **Sacrifice screen** features a full pentagram animation with particle effects — a 5.5-second ritual that makes every deposit memorable
+3. Those NFTs spawn as **enemies in-game** — each with unique types and behaviors
+4. When an NFT enemy kills a player, a **kill counter is incremented on-chain**
+5. Thanks to MagicBlock Session Keys, the player signs **once** at the start of a run — all subsequent death records are **gasless and popup-free**
+6. NFT depositors compete for the **Top Killers** leaderboard based on their NFTs' on-chain kill counts
 
 ---
 
@@ -105,18 +106,26 @@ Example confirmed tx: [`3sMukm...`](https://explorer.solana.com/tx/3sMukmosn7QnW
 
 ### Solana Integration
 - **Wallet connect** (Phantom / Solflare) with silent auto-reconnect
-- **NFT deposit** to the Arena vault with full Metaplex verification (collection, token standard, supply)
+- **NFT Sacrifice ritual** — full pentagram animation with particle effects when depositing NFTs to the vault
+- **Metaplex verification** (collection whitelist, token standard, supply) on every deposit
 - **MagicBlock Session Keys** for gasless death recording
 - **On-chain kill counter** per deposited NFT
-- **Community Arena** UI showing deposited enemies and top killers
-- **Leaderboard** with on-chain kill data + local run scores
+- **Graveyard** UI showing deposited enemies, top killers, and paginated "my sacrifices"
+- **Leaderboard** with tabs for Top Runs (local scores) and Top Killers (on-chain data)
 
-### Arena System
-- NFTs from whitelisted collections can be deposited into the vault
+### Sacrifice & Arena System
+
+**SACRIFICE** — the ritual screen where NFTs are deposited:
+- Select an NFT from your wallet (whitelisted collections only)
+- A **5.5-second animated ritual** plays: pentagram charge → energy impact → NFT reveal → "SACRIFICED" text
+- The NFT is transferred to the Arena vault and an `EnemyAssetAccount` is created on-chain
 - Each deposited NFT maps to an enemy type and spawns in-game
-- When that NFT enemy kills a player, its `kill_counter` increments on-chain
-- Depositors compete for recognition via the Top Killers leaderboard
-- NFT images are fetched from Helius DAS API and displayed in the Arena UI
+
+**GRAVEYARD** — the arena viewer:
+- Shows all deposited enemies with their NFT images (fetched via Helius DAS API)
+- **Top Killers** tab: NFT enemies ranked by on-chain kill count
+- **My Sacrifices** tab: paginated view of NFTs you've deposited
+- When an NFT enemy kills a player, its `kill_counter` increments on-chain
 
 ---
 
@@ -144,7 +153,7 @@ solanasurvivors/
 │                          (framework-agnostic — no Phaser imports)
 ├── apps/
 │   └── web/             # Phaser 3 client + Solana integrations
-│       ├── scenes/      # Boot, Home, Run, Pause, LevelUp, GameOver, Arena, Leaderboard
+│       ├── scenes/      # Boot, Home, Run, Pause, LevelUp, GameOver, Sacrifice, Arena (Graveyard), Leaderboard
 │       ├── entities/    # Player, Enemy, Projectile, XPGem
 │       ├── weapons/     # 6 weapon implementations
 │       ├── systems/     # Combat, Spawning, Upgrades, Input
@@ -250,7 +259,9 @@ Weapons fire automatically at the nearest enemy. No aiming required.
 4. Collect blue XP gems dropped by enemies
 5. On level up, choose 1 of 3 upgrades (new weapons or passive stat boosts)
 6. Survive 10 minutes to win, or die to an NFT enemy (their kill counter goes up!)
-7. Check the **ARENA** to see top killers and deposit your own NFTs
+7. Visit **SACRIFICE** to deposit NFTs into the vault with an animated ritual
+8. Check the **GRAVEYARD** to see deposited enemies and top killers
+9. View the **LEADERBOARD** for Top Runs and Top Killers rankings
 
 ---
 

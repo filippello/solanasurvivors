@@ -20,6 +20,7 @@ export class Projectile extends Phaser.GameObjects.Sprite {
   fire(x: number, y: number, vx: number, vy: number, damage: number, pierce: number, textureKey = 'proj-magic-bolt', owner: 'player' | 'enemy' = 'player'): void {
     this.setPosition(x, y);
     this.setTexture(textureKey);
+    this.setDisplaySize(10, 10);
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;

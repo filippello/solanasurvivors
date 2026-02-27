@@ -16,10 +16,12 @@ What we have now:
 - [x] Community Arena UI (top killers, deposited enemies)
 - [x] Local leaderboard (localStorage)
 - [x] PlayerAccount PDA for session auth
+- [x] SacrificeScene with full ritual animation (pentagram charge → impact → reveal → sacrificed text)
+- [x] LeaderboardScene with tabs (Top Runs + Top Killers on-chain)
+- [x] ArenaScene redesigned as "Graveyard" with top killers + paginated "my sacrifices"
 
 ### Pending / short-term fixes
 
-- [ ] ArenaScene deposit button (UI exists, tx not wired yet)
 - [ ] Handle session expiry mid-run gracefully (re-create or show message)
 - [ ] Persist session keypair across page refreshes (sessionStorage or encrypted localStorage)
 - [ ] Skip session creation if wallet has no SOL (show warning instead of failed tx)
